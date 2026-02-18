@@ -77,14 +77,22 @@
 
         let db, auth, currentCategoryFilter = "ALL"; // Zmienna do filtru kategorii
 
+        // Start projektu - poprawiona kolejność ładowania: najpierw dane, potem obsługa auth
         async function startProject() {
             try {
                 const firebaseConfig = await (await fetch('/config')).json();
                 firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore(); auth = firebase.auth();
-                setupAuthListener(); displayAds(); setupButtons(); setupCategoryFilter();
+                db = firebase.firestore(); 
+                auth = firebase.auth();
+                await displayAds(); // najpierw zawsze pobieraj ogłoszenia dla KAŻDEGO użytkownika (niezależnie od autoryzacji)
+                setupAuthListener(); 
+                setupButtons(); 
+                setupCategoryFilter();
                 setupImgModal(); // dodane do obsługi powiększania zdjęć
-            } catch (e) {console.error("Błąd startu:",e); showPopupToast("Błąd startu: "+e.message,"error");}
+            } catch (e) {
+                console.error("Błąd startu:",e); 
+                showPopupToast("Błąd startu: "+e.message,"error");
+            }
         }
 
         // Obsługa logowania/wylogowania oraz przełączania widoku panelu administratora
@@ -105,6 +113,7 @@
                     adminPanel.style.display='none';
                     document.body.classList.remove('is-admin');
                 }
+                // NIE wywołuj ponownie displayAds() tutaj! Wywołane tylko podczas startu/profiltrze, nie po zmianie auth
             });
             document.getElementById('btnLogin').onclick=async()=>{
                 try {
@@ -134,8 +143,12 @@
                     c.innerHTML="<h2>Ostatnio dodane</h2>";
                     inneDocs.forEach(doc=>c.innerHTML+=adHTML(doc));
                     if(inneDocs.length===0) c.innerHTML += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
+                    setTimeout(setupAllCarousels, 10);
+                    setTimeout(setupImgClickListeners, 20);
                     return;
-                } else query = query.where("category", "==", currentCategoryFilter);
+                } else {
+                    query = query.where("category", "==", currentCategoryFilter);
+                }
             }
             const snap = await query.get();
             document.getElementById('adCounter').innerText="Ogłoszeń: "+snap.size; 
