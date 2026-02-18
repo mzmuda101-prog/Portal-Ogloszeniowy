@@ -1,19 +1,29 @@
 1.1 - Live Demo https://portal-ogloszeniowy.vercel.app
-# 🚀 Multi-Cloud Marketplace Portal
-Zaawansowany portal ogłoszeniowy wykorzystujący architekturę rozproszoną w chmurze.
+# 🚀 Portal Ogłoszeniowy CloudStack
+Zaawansowana aplikacja webowa typu marketplace z pełną integracją chmurową.
+
+## 🌟 Główne Funkcje
+- **Dynamiczne Ogłoszenia:** Wyświetlanie treści w czasie rzeczywistym z bazy NoSQL.
+- **Multi-Cloud Storage:** Separacja danych tekstowych (Firebase) od multimediów (Cloudinary).
+- **Admin Panel:** Zabezpieczony system logowania dla administratora (Firebase Auth).
+- **Cloudinary Integration:** Automatyczny upload i optymalizacja zdjęć bezpośrednio do chmury.
 
 ## 🛠️ Stack Technologiczny
-- **Frontend:** JavaScript / CSS3
-- **Baza Danych (Tekst):** Firebase Firestore (Real-time updates)
-- **Media Storage (Zdjęcia):** Cloudinary API (Automatyczna optymalizacja obrazów)
-- **Hosting:** Vercel (CI/CD zintegrowane z GitHub)
+- **Frontend:** HTML5, CSS3 (Custom Styling), JavaScript (ES6+)
+- **Backend-as-a-Service:** Firebase (Firestore, Auth)
+- **Media Cloud:** Cloudinary API
+- **Deployment:** Vercel (CI/CD)
 
-## 🔐 Kluczowe Rozwiązania
-- **Bezpieczeństwo:** Pełna separacja kluczy API przy użyciu zmiennych środowiskowych (`.env`).
-- **Cloud Integration:** Dynamiczne przesyłanie zdjęć do zewnętrznej chmury Cloudinary z natychmiastowym zapisem linku w bazie Firestore.
-- **Responsive Design:** Strona w pełni dostosowana do urządzeń mobilnych.
+## 🔒 Bezpieczeństwo i Dobre Praktyki
+- **Environment Variables:** Wrażliwe dane (API Keys) są w pełni odizolowane w pliku `.env` i nie są publikowane w repozytorium.
+- **Security Rules:** Zastosowano reguły dostępu Firebase ograniczające uprawnienia do bazy.
+- **Secure Delivery:** Wszystkie media serwowane są przez protokół HTTPS.
 
-## 📖 Jak uruchomić lokalnie?
-1. Sklonuj repozytorium.
-2. Stwórz plik `.env` i dodaj swoje klucze Firebase oraz Cloudinary.
-3. Uruchom `npm install` oraz `npm start`.
+## 📁 Struktura Projektu
+Projekt znajduje się w folderze `Strona_9/public`. 
+- `index.html` - Główna struktura i logika aplikacji.
+- `style.css` - Warstwa wizualna.
+- `klucze.env` - Konfiguracja środowiskowa (lokalnie).
+
+---
+*Projekt stworzony jako element profesjonalnego portfolio programistycznego.*
