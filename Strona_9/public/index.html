@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Mateusza - Final Cloud 🚀</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"}}</script>
+</head>
+<body>
+    <!-- Logo w prawym górnym rogu, zaokrąglone -->
+    <div class="site-logo-container">
+        <a href="./">
+        <img src="logo Mateusz.png" alt="Logo Portal Mateusza" class="site-logo-img">
+        </a>
+        <span class="logo-title">Mateusz App</span>
+    </div>
+    <div id="authSection" class="form-section">
+        <div id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Email admina"><input type="password" id="loginPass" placeholder="Hasło">
+            <button id="btnLogin">Zaloguj jako Admin</button>
+        </div>
+        <div id="adminPanel" class="admin-panel">
+            <p>Witaj Adminie! Możesz teraz zarządzać ogłoszeniami.</p>
+            <button id="btnLogout" class="delete-btn admin-logout-btn">Wyloguj</button>
+        </div>
+    </div>
+    <h1>Portal Mateusza <span class="highlight-accent">PORTAL</span></h1>
+    <p id="adCounter" class="ad-counter">Łączenie...</p>
+    <div id="adFormSection" class="form-section">
+        <h2>Dodaj ogłoszenie</h2>
+        <label for="adCategory" class="visually-hidden">Kategoria ogłoszenia</label>
+        <select id="adCategory">
+            <option value="Inne">Inne</option>
+            <option value="Usługi">🛠️ Usługi</option>
+            <option value="Sprzedam">💰 Sprzedam</option>
+            <option value="Praca">💼 Praca</option>
+            <option value="Motoryzacja">🚗 Motoryzacja</option>
+        </select>
+        <input type="text" id="title" placeholder="Tytuł...">
+        <textarea id="content" rows="3" placeholder="Opis przedmiotu..."></textarea>
+        <div class="ad-img-preview-list" id="imgPreview"></div>
+        <button id="upload_widget" class="cloudinary-upload-btn">📸 Wybierz zdjęcia (max 4)</button>
+        <p id="photo-status" class="photo-status" style="display:none;">✅ Zdjęcia załadowane!</p>
+        <button id="btnPublish" class="publish-btn">Opublikuj na portalu</button>
+    </div>
+
+    <!-- Wybór filtra kategorii ogłoszeń -->
+    <div class="form-section" id="adFilterSection">
+        <label for="adsCategoryFilter">Pokaż ogłoszenia według kategorii:</label>
+        <select id="adsCategoryFilter">
+            <option value="ALL">Wszystkie kategorie</option>
+            <option value="Inne">Inne</option>
+            <option value="Usługi">🛠️ Usługi</option>
+            <option value="Sprzedam">💰 Sprzedam</option>
+            <option value="Praca">💼 Praca</option>
+            <option value="Motoryzacja">🚗 Motoryzacja</option>
+        </select>
+    </div>
+    <div class="ads-container" id="adsContainer"><h2>Ostatnio dodane</h2></div>
+    <div id="popupToast" class="popup-toast"></div> <!-- Komunikaty popup -->
+
+    <!-- MODAL do powiększania zdjęć w ogłoszeniu -->
+    <div id="imgModal" class="img-modal-overlay">
+        <div class="img-modal-content">
+            <button class="img-modal-close" id="imgModalClose" aria-label="Zamknij powiększone zdjęcie"><span>&times;</span></button>
+            <img src="" alt="Powiększone zdjęcie" id="imgModalImg">
+        </div>
+    </div>
+
+    <script>
+        // Prosty popup na górze ekranu ↓↓↓ (informacje dla użytkownika)
+        function showPopupToast(msg, type=""){const el=document.getElementById('popupToast');el.innerText=msg;el.className='popup-toast'+(type?' '+type:'');el.classList.add('show');clearTimeout(el._timeout);el._timeout=setTimeout(()=>el.classList.remove('show'),2000);}
+
+        let db, auth, currentCategoryFilter = "ALL"; // Zmienna do filtru kategorii
+
+        async function startProject() {
+            try {
+                const firebaseConfig = await (await fetch('/config')).json();
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore(); auth = firebase.auth();
+                setupAuthListener(); displayAds(); setupButtons(); setupCategoryFilter();
+                setupImgModal(); // dodane do obsługi powiększania zdjęć
+            } catch (e) {console.error("Błąd startu:",e); showPopupToast("Błąd startu: "+e.message,"error");}
+        }
+
+        // Obsługa logowania/wylogowania oraz przełączania widoku panelu administratora
+        function setupAuthListener() {
+            auth.onAuthStateChanged(user=>{
+                const adForm = document.getElementById('adFormSection'),
+                    loginForm = document.getElementById('loginForm'),
+                    adminPanel = document.getElementById('adminPanel');
+                if(user){
+                    adForm && (adForm.style.display='block');
+                    loginForm.style.display='none';
+                    adminPanel.style.display='block';
+                    document.body.classList.add('is-admin');
+                    showPopupToast("Jesteś zalogowany jako admin.","success");
+                } else {
+                    adForm && (adForm.style.display='none');
+                    loginForm.style.display='block';
+                    adminPanel.style.display='none';
+                    document.body.classList.remove('is-admin');
+                }
+            });
+            document.getElementById('btnLogin').onclick=async()=>{
+                try {
+                    await auth.signInWithEmailAndPassword(
+                        document.getElementById('loginEmail').value,
+                        document.getElementById('loginPass').value
+                    );
+                    showPopupToast("Witaj Adminie!","success");
+                } catch(e){showPopupToast("Błąd: "+e.message,"error");}
+            };
+            document.getElementById('btnLogout').onclick=()=>{auth.signOut(); showPopupToast("Wylogowano.","info");};
+        }
+
+        // Wyświetlanie ogłoszeń (z obsługą karuzeli zdjęć i filtra kategorii)
+        async function displayAds(){
+            const c = document.getElementById('adsContainer');
+            let query = db.collection("ogloszenia").orderBy("timestamp","desc");
+            // Specjalne traktowanie ogłoszeń bez kategorii lub kategorii "Inne"
+            if (currentCategoryFilter !== "ALL") {
+                if(currentCategoryFilter==="Inne"){
+                    const all = await query.get(), inneDocs=[];
+                    all.forEach(doc=>{
+                        const ad=doc.data();
+                        if (!ad.category || ad.category==="" || ad.category==="Inne") inneDocs.push(doc);
+                    });
+                    document.getElementById('adCounter').innerText="Ogłoszeń: "+inneDocs.length; 
+                    c.innerHTML="<h2>Ostatnio dodane</h2>";
+                    inneDocs.forEach(doc=>c.innerHTML+=adHTML(doc));
+                    if(inneDocs.length===0) c.innerHTML += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
+                    return;
+                } else query = query.where("category", "==", currentCategoryFilter);
+            }
+            const snap = await query.get();
+            document.getElementById('adCounter').innerText="Ogłoszeń: "+snap.size; 
+            c.innerHTML="<h2>Ostatnio dodane</h2>";
+            snap.forEach(doc=>c.innerHTML+=adHTML(doc));
+            if (snap.empty) c.innerHTML += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
+            setTimeout(setupAllCarousels, 10);
+            setTimeout(setupImgClickListeners, 20); // nowe: ustaw klik na zdjęcia
+        }
+
+        // Funkcja generująca HTML pojedynczego ogłoszenia, wspierająca galerię zdjęć i karuzelę
+        function adHTML(doc) {
+            const ad = doc.data();
+            let imagesArr = [];
+            if(Array.isArray(ad.images)) imagesArr = ad.images;
+            else if(ad.image) imagesArr = [ad.image];
+            // Element karuzeli zdjęć
+            let carouselHTML = "";
+            if(imagesArr.length > 0){
+                carouselHTML += `<div class="ad-carousel" data-imgcount="${imagesArr.length}" data-adid="${doc.id}">`;
+                carouselHTML += `<button class="carousel-arrow left" style="display:none;" aria-label="Poprzednie zdjęcie">&#8592;</button>`;
+                // dodaj klasę img-pop-big do img żeby potem łatwo podpiąć event 
+                carouselHTML += `<img src="${imagesArr[0]}" loading="lazy" alt="Zdjęcie ogłoszenia" class="img-pop-big" style="max-width:320px;max-height:240px;cursor:zoom-in;">`;
+                carouselHTML += `<button class="carousel-arrow right"${imagesArr.length==1?' style="display:none;"':""} aria-label="Następne zdjęcie">&#8594;</button>`;
+                if(imagesArr.length > 1){
+                    carouselHTML += `<div class="carousel-dots">`;
+                    imagesArr.forEach((_,idx)=>
+                        carouselHTML+=`<span class="carousel-dot${idx==0?' active':''}" data-idx="${idx}"></span>`
+                    );
+                    carouselHTML += `</div>`;
+                }
+                carouselHTML += `</div>`;
+            }
+            return `<div class="ad-card">
+                <button class="delete-btn" onclick="deleteAd('${doc.id}')">Usuń ×</button>
+                <span class="category-badge">${ad.category||'Inne'}</span>
+                <h3>${ad.title}</h3>
+                <p>${ad.content}</p>
+                ${carouselHTML}
+                <br><small>📅 ${ad.date}</small>
+            </div>`;
+        }
+
+        // Obsługa zmiany kategorii ogłoszeń w filtrze
+        function setupCategoryFilter() {
+            const select = document.getElementById('adsCategoryFilter');
+            select && select.addEventListener('change', function() {
+                currentCategoryFilter = this.value;
+                displayAds();
+            });
+        }
+
+        // Usuwanie ogłoszenia (panel administratora)
+        window.deleteAd=async(id)=>showDeleteModal(async y=>{
+            if(y) try{
+                await db.collection("ogloszenia").doc(id).delete();
+                showPopupToast("Ogłoszenie usunięte!","success");
+                displayAds();
+            }catch(e){showPopupToast("Błąd podczas usuwania!","error");}
+        });
+
+        // Potwierdzenie usunięcia ogłoszenia (modal)
+        function showDeleteModal(cb){
+            const m=document.getElementById('customConfirm'); m.style.display='flex';
+            document.getElementById('confirmYes').onclick=()=>{m.style.display='none';cb(true);};
+            document.getElementById('confirmNo').onclick=()=>{m.style.display='none';cb(false);};
+        }
+
+        // Wiele zdjęć - obsługa uploadu, podglądu i dodania ogłoszenia (maksymalnie 4 zdjęcia)
+        function setupButtons(){
+            const imgPreviewDiv = document.getElementById('imgPreview');
+            let images = []; // Tablica linków do załadowanych zdjęć
+
+            // Odświeżanie miniaturek przesłanych zdjęć
+            function renderImgPreview(){
+                imgPreviewDiv.innerHTML = '';
+                images.forEach((url, idx) => {
+                    imgPreviewDiv.innerHTML += `<div style="position:relative;display:inline-block;">
+                        <img src="${url}" />
+                        <button type="button" class="remove-image-btn" title="Usuń to zdjęcie" onclick="removePreviewImg(${idx})">&times;</button>
+                    </div>`;
+                });
+            }
+            // Usuwanie miniaturki (z tablicy linków)
+            window.removePreviewImg = function(idx) {
+                images.splice(idx,1); renderImgPreview();
+                if(images.length===0) document.getElementById('photo-status').style.display='none';
+            };
+
+            // Widget uploadu Cloudinary
+            const w=cloudinary.createUploadWidget({
+                cloudName:'dggnjcnhd',
+                uploadPreset:'strona_8_ml_default',
+                maxFiles: 4,
+                sources: ['local','url','camera','image_search'],
+                multiple: true,
+                clientAllowedFormats: ["jpg", "png", "jpeg", "webp"],
+                folder: "portal_mateusza_ads" 
+            },(error,res)=>{
+                if(!error&&res.event==="success"&&res.info&&res.info.secure_url){
+                    if(images.length >= 4) {
+                        showPopupToast("Możesz dodać maksymalnie 4 zdjęcia!","error");
+                        return;
+                    }
+                    images.push(res.info.secure_url);
+                    renderImgPreview();
+                    document.getElementById('photo-status').style.display='block';
+                    showPopupToast("Zdjęcie załadowane.","success");
+                }
+            });
+            document.getElementById("upload_widget").onclick=()=>{
+                if(images.length>=4){ showPopupToast("Możesz dodać maksymalnie 4 zdjęcia!","error"); return; }
+                w.open();
+            };
+            document.getElementById('btnPublish').onclick=async()=>{
+                const t=document.getElementById('title').value, co=document.getElementById('content').value, ca=document.getElementById('adCategory')?.value||"Inne";
+                if(!t||!co) return showPopupToast("Wypełnij tytuł i opis!","error");
+                if(images.length === 0) return showPopupToast("Dodaj chociaż jedno zdjęcie!","error");
+                try{
+                    await db.collection("ogloszenia").add({
+                        title:t,content:co,category:ca,
+                        images:images,
+                        date:new Date().toLocaleString('pl-PL'),
+                        timestamp:firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showPopupToast("Ogłoszenie opublikowane!","success");
+                    setTimeout(()=>location.reload(),900);
+                }catch(e){
+                    console.error("Błąd publikacji:",e);
+                    showPopupToast("Błąd podczas publikacji!","error");
+                }
+            };
+        }
+
+        // Obsługa karuzeli zdjęć w ogłoszeniu (przewijanie strzałkami/dotami)
+        function setupAllCarousels(){
+            document.querySelectorAll('.ad-carousel').forEach(carousel=>{
+                let imgCount = parseInt(carousel.getAttribute('data-imgcount'),10) || 1;
+                if(imgCount<2) return;
+                const adId = carousel.getAttribute('data-adid');
+                if(!window._AD_IMAGES) window._AD_IMAGES = {};
+                const allImages = window._AD_IMAGES[adId];
+                if(!allImages) return;
+                let imgEl = carousel.querySelector('img');
+                let leftBtn = carousel.querySelector('.carousel-arrow.left');
+                let rightBtn = carousel.querySelector('.carousel-arrow.right');
+                let dots = carousel.querySelectorAll('.carousel-dot');
+                let curr = 0;
+                function showImg(idx){
+                    idx = +idx;
+                    if(idx<0) idx = allImages.length-1;
+                    if(idx>=allImages.length) idx = 0;
+                    curr = idx;
+                    imgEl.src = allImages[curr];
+                    leftBtn.style.display = curr===0 ? 'none':'';
+                    rightBtn.style.display = curr===allImages.length-1 ? 'none':'';
+                    dots.forEach((dot, j)=>dot.classList.toggle('active', j===curr));
+                }
+                if(leftBtn) leftBtn.addEventListener('click',()=>showImg(curr-1));
+                if(rightBtn) rightBtn.addEventListener('click',()=>showImg(curr+1));
+                dots.forEach(dot=>{
+                    dot.onclick = ()=>showImg(parseInt(dot.getAttribute('data-idx'),10));
+                });
+                showImg(0);
+            });
+        }
+
+        // Przechowywanie zdjęć ogłoszenia (do karuzeli) - cache globalny
+        const _orig_adHTML = adHTML;
+        adHTML = function(doc){
+            const ad = doc.data();
+            let imgs = [];
+            if(Array.isArray(ad.images)) imgs = ad.images;
+            else if(ad.image) imgs = [ad.image];
+            if(!window._AD_IMAGES) window._AD_IMAGES = {};
+            window._AD_IMAGES[doc.id] = imgs;
+            return _orig_adHTML(doc);
+        };
+
+        // Dodanie obsługi kliknięcia na zdjęcie ogłoszenia, aby je powiększyć
+        function setupImgClickListeners() {
+            document.querySelectorAll('.ad-carousel img.img-pop-big').forEach(img=>{
+                img.onclick=function(e){
+                    // ustaw src modalowi na aktualne src klikniętego img
+                    let modal = document.getElementById('imgModal');
+                    let modalImg = document.getElementById('imgModalImg');
+                    modalImg.src = img.src;
+                    modal.classList.add('active');
+                    e.stopPropagation();
+                };
+            });
+        }
+        // Obsługa zamykania modala powiększonego zdjęcia
+        function setupImgModal(){
+            const modal = document.getElementById('imgModal');
+            const closeBtn = document.getElementById('imgModalClose');
+            const img = document.getElementById('imgModalImg');
+            closeBtn.onclick = ()=>{ modal.classList.remove('active'); img.src=''; };
+            modal.onclick = function(e){
+                if(e.target===modal){ modal.classList.remove('active'); img.src=''; }
+            };
+            // Esc klawisz do zamykania
+            document.addEventListener('keydown',function(e){
+                if(e.key==="Escape"&&modal.classList.contains('active')){
+                    modal.classList.remove('active'); img.src='';
+                }
+            });
+        }
+
+        startProject();
+    </script>
+    <!-- Modal potwierdzenia usunięcia -->
+    <div id="customConfirm" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Potwierdź akcję</h3>  <!-- Tytuł okienka -->
+            <p>Czy na pewno chcesz usunąć to ogłoszenie?</p> <!-- Krótkie pytanie -->
+            <div class="modal-buttons">
+                <button id="confirmYes" class="btn-confirm">TAK</button> <!-- Tak -->
+                <button id="confirmNo" class="btn-cancel">NIE</button> <!-- Nie -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

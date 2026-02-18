@@ -1,0 +1,420 @@
+:root {
+  --primary-color: #e67e22; /* Ciepły miedziany (pasuje do drewna) */
+  --bg-overlay: rgba(18,18,18,0.65); /* Ciemna maska na zdjęcie tła */
+  --card-bg: rgba(30,30,30,0.9); /* Tło kart (90% widoczności) */
+  --text-main: #f5f5f5; /* Główny kolor czcionki (off-white) */
+  --accent: #f1c40f; /* Złoty kolor dla nagłówków w ogłoszeniach */
+  --delete-red: #e74c3c; /* Czerwień ostrzegawcza dla usuwania */
+  --font-header: 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; /* Główny font nagłówków */
+  --screw-color: #555; /* Kolor łebka śruby (ciemny metal) */
+}
+
+/* --- Selektory elementów (bez kropki ani #) --- */
+body {
+  /* Usuwamy 'fixed' i ustawiamy tło tak, by mogło się przesuwać */
+  background-image: linear-gradient(var(--bg-overlay),var(--bg-overlay)),url('tlo.jpg'); /* Tło: gradient + obrazek drewna */
+  background-attachment: scroll; /* Tło przewija się razem z treścią (realistycznie) */
+  background-repeat: repeat-y; /* Deski będą się powtarzać w dół, jeśli strona będzie długa */
+  background-position: center top; /* Startujemy od samej góry zdjęcia */
+  background-size: 100% auto; /* Szerokość na 100%, wysokość dopasuje się sama */
+  color: var(--text-main); /* Główny kolor tekstu */
+  font-family: var(--font-header); /* Czcionka nagłówkowa */
+  max-width: 800px; /* Maksymalna szerokość kontenera */
+  margin: 0 auto; /* Wyśrodkowanie */
+  padding: 40px 20px; /* Odstępy wewnętrzne */
+  padding-top: 140px;
+  line-height: 1.6; /* Wysokość linii tekstu */
+}
+h1, h2 {
+  color: var(--primary-color); /* Kolor nagłówków */
+  text-align: center; /* Wyśrodkowanie napisów */
+  text-transform: uppercase; /* Wielkie litery */
+  letter-spacing: 2px; /* Rozstrzelenie liter (efekt premium) */
+  text-shadow: 2px 2px 4px black; /* Cień pod tekstem dla lepszej czytelności */
+  animation: fadeInDown 0.8s; /* Start animacji wjazdu z góry */
+}
+input, textarea, select {
+  width: 100%; /* Szerokość na 100% kontenera */
+  background: rgba(0,0,0,0.3); /* Bardzo ciemne, przezroczyste pole */
+  color: white; /* Biały tekst wpisywany przez użytkownika */
+  border: 1px solid #555; /* Obramowanie pola wpisywania */
+  padding: 12px; /* Miejsce na tekst wewnątrz pola */
+  margin: 10px 0; /* Odstęp między polami */
+  border-radius: 5px; /* Lekkie zaokrąglenie pól */
+  box-sizing: border-box; /* Zapobiega "wychodzeniu" pól poza ramkę */
+  transition: 0.3s; /* Płynne przejście przy kliknięciu */
+}
+input:focus, textarea:focus {
+  outline: none; /* Usunięcie domyślnej obwódki przeglądarki */
+  border-color: var(--primary-color); /* Zmiana koloru ramki na miedziany */
+}
+button {
+  /* PRZYCISKI Z EFEKTEM 3D I KLIKNIĘCIEM */
+  background: linear-gradient(135deg,var(--primary-color),#d35400); /* Gradient */
+  color: white; /* Biały kolor tekstu na przycisku */
+  font-weight: bold; /* Pogrubienie napisu */
+  cursor: pointer; /* Zmiana kursora na "łapkę" */
+  border: none; /* Brak bocznego obramowania */
+  padding: 15px; /* Wysokość przycisku */
+  width: 100%; /* Szerokość na całą dostępną przestrzeń */
+  border-radius: 8px; /* Zaokrąglenie rogów przycisku */
+  text-transform: uppercase; /* Wielkie litery na przycisku */
+  position: relative; /* Do poprawnego działania efektu wciśnięcia */
+  border-bottom: 4px solid #8e2700; /* Ciemniejszy spód (efekt grubości przycisku) */
+  transition: 0.1s; /* Bardzo szybka reakcja na kliknięcie */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Cień pod przyciskiem */
+}
+button:hover {
+  filter: brightness(1.1); /* Rozjaśnienie przy najechaniu */
+  transform: translateY(-1px); /* Lekkie uniesienie przy najechaniu */
+  border-bottom-width: 5px; /* Pogrubienie spodu (przycisk "wstaje") */
+}
+button:active {
+  transform: translateY(4px); /* Przycisk opada o wysokość spodu */
+  border-bottom-width: 0px; /* Spód "znika" w blaszanej karcie */
+  box-shadow: none; /* Cień znika, bo przycisk dotyka powierzchni */
+}
+
+/* --- Selektory klasowe (.klasa) --- */
+
+/* Prosty popup/toast */
+.popup-toast {
+  position: fixed; left: 50%; bottom: 50px; min-width: 180px; max-width: 85vw;
+  transform: translateX(-50%);
+  background: var(--card-bg,#222); color: var(--text-main,#fff);
+  padding: 16px 28px; border-radius: 10px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.32); /* Głęboki cień */
+  font-size: 1em; font-family: var(--font-header,inherit);
+  z-index: 9999; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.popup-toast.show { opacity: 1; pointer-events: auto; } /* Pokaż popup */
+.popup-toast.error { background: var(--delete-red,#c0392b); color: #fff; }
+.popup-toast.success { background: var(--primary-color,#27ae60); color: #fff; }
+.popup-toast.info { background: var(--accent,#f1c40f); color: #181818; }
+
+.form-section, .ad-card {
+  background: var(--card-bg); /* Półprzezroczyste tło sekcji */
+  padding: 30px; /* Wewnętrzny odstęp */
+  border-radius: 10px; /* Mniejsze zaokrąglenie (jak docięta blacha) */
+  border: 1px solid #444; /* Delikatna ramka wokół elementu */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Głęboki cień pod elementem */
+  backdrop-filter: blur(5px); /* Rozmycie drewna pod spodem */
+  position: relative; /* Potrzebne, żeby śruby trzymały się rogów */
+  margin-bottom: 30px; /* Odstęp od dołu */
+}
+/* EFEKT ŚRUB W ROGACH (Lewa i Prawa góra) */
+.form-section::before, .ad-card::before, .form-section::after, .ad-card::after {
+  content: ''; /* Tworzy puste elementy dekoracyjne */
+  position: absolute; /* Ustawienie precyzyjne w rogach */
+  width: 10px; height: 10px; /* Szerokość/Wysokość łebka śruby */
+  background: radial-gradient(circle,#888,#222); /* Gradient metalicznego nitu */
+  border-radius: 50%; /* Okrągły kształt śruby */
+  box-shadow: 1px 1px 2px black; /* Cień pod śrubą dla efektu 3D */
+  top: 10px; /* 10px od górnej krawędzi */
+}
+.form-section::before, .ad-card::before {
+  left: 10px; /* Śruba w lewym rogu */
+}
+.form-section::after, .ad-card::after {
+  right: 10px; /* Śruba w prawym rogu */
+}
+.ad-card {
+  border-left: 5px solid var(--primary-color); /* Miedziany pasek z lewej strony */
+  animation: zoomIn 0.5s both; /* Efekt płynnego pojawiania się */
+  transition: transform 0.3s; /* Płynność ruchu przy najechaniu */
+}
+.ad-card:hover {
+  transform: translateY(-3px); /* Karta lekko się unosi po najechaniu */
+}
+.ad-card h3 {
+  margin-top: 0; /* Usunięcie marginesu nad tytułem */
+  color: var(--accent); /* Złoty kolor tytułu ogłoszenia */
+}
+.ad-card img {
+  max-width: 100%; /* Obrazek nie może być szerszy niż karta */
+  border-radius: 5px; /* Zaokrąglenie rogów zdjęcia */
+  margin-top: 15px; /* Odstęp zdjęcia od tekstu powyżej */
+  border: 1px solid rgba(255,255,255,0.1); /* Bardzo cienka ramka zdjęcia */
+}
+
+/* PRZYCISK USUWANIA */
+.delete-btn {
+  background: transparent; /* Brak tła przycisku usuwania */
+  color: var(--delete-red); /* Czerwony kolor napisu Usuń */
+  border: 1px solid var(--delete-red); /* Czerwona ramka przycisku */
+  border-bottom: 2px solid #a93226; /* Efekt 3D dla przycisku Usuń */
+  padding: 6px 12px; /* Rozmiar przycisku */
+  font-size: 0.85em; /* Nieco mniejszy tekst */
+  border-radius: 6px; /* Zaokrąglenie przycisku */
+  float: right; /* Przesunięcie przycisku do prawej */
+  transition: 0.1s; /* Szybka reakcja */
+  display: none; /* Domyślnie ukryte dla wszystkich */
+}
+.delete-btn:active {
+  transform: translateY(2px); /* Wciśnięcie przycisku Usuń */
+  border-bottom-width: 0px; /* Likwidacja spodu przy kliku */
+}
+.is-admin .delete-btn {
+  display: block; /* Pokazane tylko, gdy body ma klasę is-admin */
+}
+
+/* Klasa, którą dodamy przez JavaScript tuż przed usunięciem karty */
+.fade-out {
+  opacity: 0; /* Karta staje się przezroczysta */
+  transform: scale(0.9) translateY(20px); /* Karta maleje i opada */
+  transition: 0.5s; /* Całość trwa pół sekundy */
+  pointer-events: none; /* Blokuje klikanie w kartę podczas znikania */
+}
+
+/* CZARNA MASKA NA CAŁY EKRAN */
+.modal-overlay {
+  position: fixed; /* Okienko "pływa" nad stroną */
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85); /* Mocne przyciemnienie tła */
+  display: flex; /* Wyśrodkowanie okienka */
+  justify-content: center; align-items: center;
+  z-index: 1000; /* Żeby zawsze było na samym wierzchu */
+}
+/* Szybki styl dla powiększonego obrazka (modal) */
+.img-modal-overlay {
+    display:none; position:fixed; z-index:10001; left:0; top:0; width:100vw; height:100vh;
+    background:rgba(0,0,0,0.85); align-items:center; justify-content:center;
+}
+.img-modal-overlay.active { display:flex; }
+.img-modal-content {
+    position:relative; max-width:90vw; max-height:90vh; width:auto; height:auto; 
+    box-shadow:0 0 40px #000; border-radius:8px;
+}
+.img-modal-content img{
+    max-width:90vw; max-height:80vh; border-radius:8px;
+    background:#fff;
+}
+.img-modal-close {
+    position:absolute; top:12px; right:14px; color:#fff; background:rgba(0,0,0,0.6); border:none;
+    font-size:2em; border-radius:50%; width:42px; height:42px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    padding:0;
+}
+.img-modal-close span {
+    display:block; width:100%; text-align:center; line-height:1;
+    font-size:1.4em; /* zmniejsza X żeby nie był za duży względem kółka */
+    transform:translateY(-2px);
+}
+.img-modal-close:active { background:rgba(0,0,0,0.85); }
+/* TABLICZKA MODALA */
+.modal-content {
+  background: var(--card-bg); /* Nasze ciemne tło */
+  padding: 30px; border-radius: 10px;
+  border: 2px solid var(--primary-color); /* Miedziana ramka */
+  text-align: center; /* Środek tekstu */
+  box-shadow: 0 0 30px rgba(0,0,0,1);
+  max-width: 350px; /* Okienko nie będzie za szerokie */
+  position: relative; /* Pozycjonowanie */
+}
+
+/* Karuzela i galeria zdjęć ogłoszenia - poprawione rozmiary dla dużych ekranów */
+.ad-carousel {
+  position: relative; /* Pozycja względem karuzeli */
+  width: 100%; /* Szerokość karuzeli */
+  margin: 8px 0 15px 0; /* Marginesy */
+  text-align: center; /* Wyśrodkowanie */
+  min-height: 0; /* Minimalna wysokość */
+}
+.ad-carousel img {
+  display: block; /* Blokowy obrazek */
+  margin: 0 auto; /* Wyśrodkowanie */
+  max-width: 95vw; /* Maksymalna szerokość na małych ekranach */
+  width: 100%; /* Zawsze 100% szerokości rodzica */
+  height: auto; /* Proporcjonalna wysokość */
+  max-height: 240px; /* Maksymalna wysokość */
+  box-shadow: 0 3px 14px rgba(0,0,0,0.30); /* Cień */
+  border-radius: 8px; /* Zaokrąglenie */
+  background: #222; /* Ciemne tło okolice zdjęcia */
+  border: 1.5px solid #242424; /* Lekka ramka */
+  transition: max-width 0.2s, max-height 0.2s; /* Płynne efekty */
+}
+/* Strzałki do karuzeli zdjęć */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  width: 28px; height: 28px;
+  border-radius: 30px; /* Okrągła strzałka */
+  background: rgba(34,34,34,0.35); /* Półprzezroczysta */
+  color: #fff; /* Biała */
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1;
+  display: flex; /* Wyśrodkowanie znaku w strzałce */
+  align-items: center; justify-content: center;
+  transition: background 0.2s;
+  transform: translateY(-50%) scale(1);
+}
+.carousel-arrow.left { left: 6px; } /* Strzałka lewa */
+.carousel-arrow.right { right: 6px; } /* Strzałka prawa */
+.carousel-arrow:hover { background: rgba(34,34,34,0.90); transform: translateY(-50%) scale(1); }
+.carousel-arrow:active { transform: translateY(-50%) scale(1); }
+
+/* Kropki do karuzeli zdjęć */
+.carousel-dots {
+  text-align: center;
+  margin-top: 5.5px;
+  user-select: none; /* Uniemożliwia zaznaczanie kropek */
+}
+.carousel-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  margin: 0 3.5px;
+  background: #aaa; border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.carousel-dot.active { background: var(--primary-color, #e67e22); opacity: 1; } /* Pokazuje wybraną kropkę */
+
+/* Miniaturki zdjęć przesłanych w formularzu */
+.ad-img-preview-list {
+  display: flex; flex-wrap: wrap;
+  margin-bottom: 6px;
+  gap: 6px; /* Odstęp między miniaturkami */
+}
+.ad-img-preview-list img {
+  width: 55px; height: 55px; object-fit: cover; /* Kadrowanie obrazka */
+  border-radius: 7px; /* Zaokrąglenia */
+  border: 2px solid #888; /* Szara ramka */
+  background: #151515; /* Ciemne tło miniatury */
+}
+
+/* Przycisk usuwania miniatury */
+.remove-image-btn {
+  background: transparent;
+  color: #e74c3c; /* Czerwony krzyżyk */
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+  margin-left: -19px; /* Przyklejenie do zdjęcia */
+  margin-top: -6px;
+  padding: 0;
+  position: relative; z-index: 10;
+}
+.remove-image-btn:hover { color: #c0392b; }
+
+.modal-buttons { /* Przycisk obok przycisku w modalu */
+  display: flex;
+  gap: 15px; /* Odstęp między przyciskami */
+  margin-top: 20px;
+}
+.btn-confirm { background: var(--delete-red)!important; } /* Czerwony na TAK */
+.btn-cancel { background: #555!important; } /* Szary na NIE */
+
+
+/* --Logo-- */
+.logo-title {
+  font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.36rem;
+  letter-spacing: 1.2px;
+  background: linear-gradient(100deg, #e67e22 70%, #a42c00 30%);
+  color: #e94560;
+  text-shadow:
+    0 1px 4px #c53643bb;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: brightness(1.19) blur(0.01px);
+  line-height: 1.2;
+  margin-left: 1px;
+  transition:
+    font-size 0.18s cubic-bezier(.31,1.15,.69,1.09),
+    letter-spacing 0.18s,
+    color 0.18s;
+}
+.site-logo-container {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  right: 40px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  background: rgba(38, 38, 38, 0.2); /* Transparent, dark on hover */
+  border-radius: 15px;
+  padding: 8px;
+  box-shadow: 0 3px 22px 0 rgba(75, 75, 75, 0.28);
+  transition: box-shadow 0.2s, transform 0.2s, background 0.2s;
+  backdrop-filter: blur(1px); /* Rozmycie drewna pod spodem */
+}
+.site-logo-container:hover {
+  box-shadow: 0 6px 32px 0 rgba(16,16,22,0.85);
+  transform: translateY(-3px) scale(1.05);
+  background: var(--card-bg); /* Półprzezroczyste tło sekcji */
+  border: 1px solid #444; /* Delikatna ramka wokół elementu */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Głęboki cień pod elementem */
+  backdrop-filter: blur(5px); /* Rozmycie drewna pod spodem */
+}
+.site-logo-img {
+  display: block;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 30%;
+  filter: drop-shadow(0 0 40px #232932);
+  user-select: none;
+  cursor: pointer;
+  border: 4px solid #31343a;
+  background: #20232b;
+  box-sizing: border-box;
+  transition: border-color 0.22s, filter 0.2s;
+}
+.site-logo-container:hover .site-logo-img {
+  border-color: #31343a;
+  filter: drop-shadow(0 0 50px #191B20); /* ciemna poswiata */
+}
+/* --- Selektory ID (#) --- */
+#adFormSection { display: none; } /* Sekcja formularza ukryta domyślnie */
+#photo-status { display: block; } /* Pokazuje pasek statusu zdjęć */
+#customConfirm { display: none; } /* Modal potwierdzenia domyślnie schowany */
+#adFilterSection { margin-bottom: 15px; } /* Odstęp filtra */
+#adFilterSection label { font-weight: bold; } /* Pogrubienie napisów filtrowania */
+
+/* --- MEDIA QUERIES --- */
+/* Większe zdjęcia na szerszych ekranach */
+@media (max-width: 600px) {
+  .site-logo-container {
+      top: 10px;
+      right: 30px;
+      left: 30px;
+      padding: 3px 7px;
+  }
+  .site-logo-img {
+      width: 56px;
+      height: 56px;
+  }
+}
+@media (min-width: 600px) {
+  .ad-carousel img {
+    max-width: 450px;
+    max-height: 340px;
+  }
+}
+@media (min-width: 1000px) {
+  .ad-carousel img {
+    max-width: 600px;
+    max-height: 440px;
+  }
+}
+/* POPRAWKA DLA TELEFONÓW (Ekran mniejszy niż 600px szerokości) */
+@media (max-width:600px) {
+  body {
+    background-size: 250% auto; /* Powiększamy zdjęcie (deski będą szersze i wyraźniejsze) */
+    background-position: 40% top; /* Przesuwamy lekko w bok, żeby wybrać ładniejszy fragment drewna */
+    padding: 20px 10px; /* Mniejsze marginesy boczne, żeby było więcej miejsca na tekst */
+    padding-top: 80px;
+  }
+}
+
+/* --- ANIMACJE --- */
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } } /* Wjazd z góry */
+@keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } } /* Powiększenie przy wejściu */
+
+/* Funkcja cursor:pointer w CSS jest darmowa, nie ma limitu użytkowania i nie generuje żadnych kosztów – możesz jej używać dowolnie na stronie. */
