@@ -141,7 +141,14 @@
                     });
                     document.getElementById('adCounter').innerText="Ogłoszeń: "+inneDocs.length; 
                     c.innerHTML="<h2>Ostatnio dodane</h2>";
-                    inneDocs.forEach(doc=>c.innerHTML+=adHTML(doc));
+                    inneDocs.forEach(doc=>{
+                        console.log("Renderowanie ogłoszenia:", doc && doc.id, doc && doc.data());
+                        try {
+                            c.innerHTML+=adHTML(doc);
+                        } catch (e) {
+                            console.error("Błąd podczas renderowania ogłoszenia (inne):", doc && doc.id, e);
+                        }
+                    });
                     if(inneDocs.length===0) c.innerHTML += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
                     setTimeout(setupAllCarousels, 10);
                     setTimeout(setupImgClickListeners, 20);
@@ -153,25 +160,52 @@
             const snap = await query.get();
             document.getElementById('adCounter').innerText="Ogłoszeń: "+snap.size; 
             c.innerHTML="<h2>Ostatnio dodane</h2>";
-            snap.forEach(doc=>c.innerHTML+=adHTML(doc));
-            if (snap.empty) c.innerHTML += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
+            let empty = true;
+            snap.forEach(doc=>{
+                empty = false;
+                console.log("Renderowanie ogłoszenia:", doc && doc.id, doc && doc.data());
+                try {
+                    c.innerHTML+=adHTML(doc);
+                } catch(e){
+                    console.error("Błąd podczas renderowania ogłoszenia:", doc && doc.id, e);
+                }
+            });
+            if (empty || snap.empty) c.innerHTML += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
             setTimeout(setupAllCarousels, 10);
             setTimeout(setupImgClickListeners, 20); // nowe: ustaw klik na zdjęcia
         }
 
         // Funkcja generująca HTML pojedynczego ogłoszenia, wspierająca galerię zdjęć i karuzelę
         function adHTML(doc) {
-            const ad = doc.data();
+            const ad = doc.data && typeof doc.data === "function" ? doc.data() : {};
+            // Upewniamy się, że są domyślne puste wartości które nie zrywają renderowania
+            const title = (typeof ad.title === "string" ? ad.title : "") || "(brak tytułu)";
+            const content = (typeof ad.content === "string" ? ad.content : "") || "";
+            const category = (typeof ad.category === "string" && ad.category!=="") ? ad.category : "Inne";
+            const date = (typeof ad.date === "string" ? ad.date : "") || "";
+            // Obsługa pól obrazów z fallbackiem i brakiem błędu (dopasowane także pod różne nazwy)
             let imagesArr = [];
-            if(Array.isArray(ad.images)) imagesArr = ad.images;
-            else if(ad.image) imagesArr = [ad.image];
-            // Element karuzeli zdjęć
+            if(Array.isArray(ad.images) && ad.images.length) {
+                imagesArr = ad.images.filter(Boolean);
+            } else if(Array.isArray(ad.image) && ad.image.length) {
+                imagesArr = ad.image.filter(Boolean);
+            } else if(ad.imageUrl) {
+                // niektórzy stosują "imageUrl": [string] albo samo imageUrl
+                if(Array.isArray(ad.imageUrl)) {
+                    imagesArr = ad.imageUrl.filter(Boolean);
+                } else if(typeof ad.imageUrl === "string" && ad.imageUrl) {
+                    imagesArr = [ad.imageUrl];
+                }
+            } else if(ad.image && typeof ad.image === "string" && ad.image) {
+                imagesArr = [ad.image];
+            }
+            // Zabezpieczenie przed przerywaniem pętli
+            if (!Array.isArray(imagesArr)) imagesArr = [];
             let carouselHTML = "";
             if(imagesArr.length > 0){
                 carouselHTML += `<div class="ad-carousel" data-imgcount="${imagesArr.length}" data-adid="${doc.id}">`;
                 carouselHTML += `<button class="carousel-arrow left" style="display:none;" aria-label="Poprzednie zdjęcie">&#8592;</button>`;
-                // dodaj klasę img-pop-big do img żeby potem łatwo podpiąć event 
-                carouselHTML += `<img src="${imagesArr[0]}" loading="lazy" alt="Zdjęcie ogłoszenia" class="img-pop-big" style="max-width:320px;max-height:240px;cursor:zoom-in;">`;
+                carouselHTML += `<img src="${imagesArr[0]||''}" loading="lazy" alt="Zdjęcie ogłoszenia" class="img-pop-big" style="max-width:320px;max-height:240px;cursor:zoom-in;">`;
                 carouselHTML += `<button class="carousel-arrow right"${imagesArr.length==1?' style="display:none;"':""} aria-label="Następne zdjęcie">&#8594;</button>`;
                 if(imagesArr.length > 1){
                     carouselHTML += `<div class="carousel-dots">`;
@@ -184,11 +218,11 @@
             }
             return `<div class="ad-card">
                 <button class="delete-btn" onclick="deleteAd('${doc.id}')">Usuń ×</button>
-                <span class="category-badge">${ad.category||'Inne'}</span>
-                <h3>${ad.title}</h3>
-                <p>${ad.content}</p>
+                <span class="category-badge">${category}</span>
+                <h3>${title}</h3>
+                <p>${content}</p>
                 ${carouselHTML}
-                <br><small>📅 ${ad.date}</small>
+                <br><small>📅 ${date}</small>
             </div>`;
         }
 
@@ -319,10 +353,15 @@
         // Przechowywanie zdjęć ogłoszenia (do karuzeli) - cache globalny
         const _orig_adHTML = adHTML;
         adHTML = function(doc){
-            const ad = doc.data();
+            const ad = doc.data && typeof doc.data === "function" ? doc.data() : {};
             let imgs = [];
-            if(Array.isArray(ad.images)) imgs = ad.images;
-            else if(ad.image) imgs = [ad.image];
+            if(Array.isArray(ad.images) && ad.images.length) imgs = ad.images.filter(Boolean);
+            else if(Array.isArray(ad.image) && ad.image.length) imgs = ad.image.filter(Boolean);
+            else if(ad.imageUrl) {
+                if(Array.isArray(ad.imageUrl)) imgs = ad.imageUrl.filter(Boolean);
+                else if(typeof ad.imageUrl === "string" && ad.imageUrl) imgs = [ad.imageUrl];
+            }
+            else if(ad.image && typeof ad.image === "string" && ad.image) imgs = [ad.image];
             if(!window._AD_IMAGES) window._AD_IMAGES = {};
             window._AD_IMAGES[doc.id] = imgs;
             return _orig_adHTML(doc);
