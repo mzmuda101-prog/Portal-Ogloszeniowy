@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Mateusza - Final Cloud 🚀</title>
+    <!-- Preconnect dla szybszego ładowania zewnętrznych zasobów -->
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://upload-widget.cloudinary.com" crossorigin>
     <link rel="stylesheet" href="style.css">
     <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -130,10 +133,12 @@
             document.getElementById('btnLogout').onclick=()=>{auth.signOut(); showPopupToast("Wylogowano.","info");};
         }
 
-        // Wyświetlanie ogłoszeń (z obsługą karuzeli zdjęć i filtra kategorii)
+        // Wyświetlanie ogłoszeń (zoptymalizowane - jeden innerHTML na koniec)
         async function displayAds(){
             const c = document.getElementById('adsContainer');
+            const adCounter = document.getElementById('adCounter');
             let query = db.collection("ogloszenia").orderBy("timestamp","desc");
+            
             // Specjalne traktowanie ogłoszeń bez kategorii lub kategorii "Inne"
             if (currentCategoryFilter !== "ALL") {
                 if(currentCategoryFilter==="Inne"){
@@ -142,40 +147,32 @@
                         const ad=doc.data();
                         if (!ad.category || ad.category==="" || ad.category==="Inne") inneDocs.push(doc);
                     });
-                    document.getElementById('adCounter').innerText="Ogłoszeń: "+inneDocs.length; 
-                    c.innerHTML="<h2>Ostatnio dodane</h2>";
-                    inneDocs.forEach(doc=>{
-                        console.log("Renderowanie ogłoszenia:", doc && doc.id, doc && doc.data());
-                        try {
-                            c.innerHTML+=adHTML(doc);
-                        } catch (e) {
-                            console.error("Błąd podczas renderowania ogłoszenia (inne):", doc && doc.id, e);
-                        }
-                    });
-                    if(inneDocs.length===0) c.innerHTML += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
-                    setTimeout(setupAllCarousels, 10);
-                    setTimeout(setupImgClickListeners, 20);
+                    adCounter.innerText="Ogłoszeń: "+inneDocs.length;
+                    // Optymalizacja: budujemy HTML w stringu, jeden innerHTML na końcu
+                    let html = "<h2>Ostatnio dodane</h2>";
+                    inneDocs.forEach(doc=>{ html += adHTML(doc); });
+                    if(inneDocs.length===0) html += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
+                    c.innerHTML = html;
+                    setupAllCarousels();
+                    setupImgClickListeners();
                     return;
                 } else {
                     query = query.where("category", "==", currentCategoryFilter);
                 }
             }
             const snap = await query.get();
-            document.getElementById('adCounter').innerText="Ogłoszeń: "+snap.size; 
-            c.innerHTML="<h2>Ostatnio dodane</h2>";
+            adCounter.innerText="Ogłoszeń: "+snap.size;
+            // Optymalizacja: budujemy HTML w stringu
+            let html = "<h2>Ostatnio dodane</h2>";
             let empty = true;
             snap.forEach(doc=>{
                 empty = false;
-                console.log("Renderowanie ogłoszenia:", doc && doc.id, doc && doc.data());
-                try {
-                    c.innerHTML+=adHTML(doc);
-                } catch(e){
-                    console.error("Błąd podczas renderowania ogłoszenia:", doc && doc.id, e);
-                }
+                html += adHTML(doc);
             });
-            if (empty || snap.empty) c.innerHTML += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
-            setTimeout(setupAllCarousels, 10);
-            setTimeout(setupImgClickListeners, 20); // nowe: ustaw klik na zdjęcia
+            if (empty || snap.empty) html += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
+            c.innerHTML = html;
+            setupAllCarousels();
+            setupImgClickListeners();
         }
 
         // Funkcja generująca HTML pojedynczego ogłoszenia, wspierająca galerię zdjęć i karuzelę

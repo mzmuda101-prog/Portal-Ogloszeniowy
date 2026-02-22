@@ -1,12 +1,15 @@
 :root {
-  --primary-color: #e67e22; /* Ciepły miedziany (pasuje do drewna) */
-  --bg-overlay: rgba(18,18,18,0.65); /* Ciemna maska na zdjęcie tła */
-  --card-bg: rgba(30,30,30,0.9); /* Tło kart (90% widoczności) */
-  --text-main: #f5f5f5; /* Główny kolor czcionki (off-white) */
-  --accent: #f1c40f; /* Złoty kolor dla nagłówków w ogłoszeniach */
-  --delete-red: #e74c3c; /* Czerwień ostrzegawcza dla usuwania */
-  --font-header: 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; /* Główny font nagłówków */
-  --screw-color: #555; /* Kolor łebka śruby (ciemny metal) */
+  --primary-color: #e67e22;
+  --bg-overlay: rgba(18,18,18,0.65);
+  --card-bg: rgba(30,30,30,0.92); /* Lepsza wydajność - mniej przezroczystości */
+  --text-main: #f5f5f5;
+  --accent: #f1c40f;
+  --delete-red: #e74c3c;
+  --font-header: 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  --screw-color: #555;
+  /* Optymalizacja GPU */
+  --shadow-light: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-medium: 0 8px 24px rgba(0,0,0,0.5);
 }
 
 /* --- Selektory elementów (bez kropki ani #) --- */
@@ -94,14 +97,17 @@ button:active {
 .popup-toast.info { background: var(--accent,#f1c40f); color: #181818; }
 
 .form-section, .ad-card {
-  background: var(--card-bg); /* Półprzezroczyste tło sekcji */
-  padding: 30px; /* Wewnętrzny odstęp */
-  border-radius: 10px; /* Mniejsze zaokrąglenie (jak docięta blacha) */
-  border: 1px solid #444; /* Delikatna ramka wokół elementu */
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Głęboki cień pod elementem */
-  backdrop-filter: blur(5px); /* Rozmycie drewna pod spodem */
-  position: relative; /* Potrzebne, żeby śruby trzymały się rogów */
-  margin-bottom: 30px; /* Odstęp od dołu */
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  box-shadow: var(--shadow-medium);
+  /* Usunięto backdrop-filter dla wydajności */
+  position: relative;
+  margin-bottom: 30px;
+  /* Akceleracja GPU */
+  will-change: transform;
+  transform: translateZ(0);
 }
 /* EFEKT ŚRUB W ROGACH (Lewa i Prawa góra) */
 .form-section::before, .ad-card::before, .form-section::after, .ad-card::after {
@@ -332,20 +338,19 @@ button:active {
   z-index: 100;
   display: flex;
   align-items: center;
-  /* Styl "blaszanej tabliczki" */
-  background: linear-gradient(145deg, rgba(45, 45, 45, 0.95), rgba(30, 30, 30, 0.98));
-  border-radius: 8px; /* Mniejsze zaokrąglenie - bardziej przemysłowe */
+  /* Uproszczony styl dla wydajności */
+  background: rgba(40, 40, 40, 0.96);
+  border-radius: 8px;
   padding: 12px 16px;
-  /* Cień "uniesionej tabliczki" */
-  box-shadow: 
-    0 6px 20px rgba(0,0,0,0.6),
-    0 3px 10px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.05); /* Subtelny blask na górze */
+  box-shadow: var(--shadow-medium);
   border: 1px solid #333;
-  border-left: 5px solid var(--primary-color); /* Miedziany pasek jak w kartach */
-  backdrop-filter: blur(8px);
-  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-left: 5px solid var(--primary-color);
+  /* Usunięto backdrop-filter dla wydajności */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  /* Akceleracja GPU */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Śruby w rogach logo bara */
