@@ -469,7 +469,7 @@ button:active {
 }
 /* --- Selektory ID (#) --- */
 #adFormSection { display: none; } /* Sekcja formularza ukryta domyślnie */
-#photo-status { display: block; } /* Pokazuje pasek statusu zdjęć */
+#photo-status { display: none; } /* Domyślnie ukryty, pokazywany przez JS po załadowaniu zdjęć */
 #customConfirm { display: none; } /* Modal potwierdzenia domyślnie schowany */
 #adFilterSection { margin-bottom: 15px; } /* Odstęp filtra */
 #adFilterSection label { font-weight: bold; } /* Pogrubienie napisów filtrowania */
