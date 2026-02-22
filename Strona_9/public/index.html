@@ -11,8 +11,11 @@
     <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"}}</script>
 </head>
 <body>
-    <!-- Logo w prawym górnym rogu, zaokrąglone -->
-    <div class="site-logo-container">
+    <!-- Logo Bar - Styl "Przybitej Tabliczki" -->
+    <div class="site-logo-container" id="logoContainer">
+        <!-- Śruby dekoracyjne w rogach -->
+        <span class="screw-bottom-left"></span>
+        <span class="screw-bottom-right"></span>
         <a href="./">
         <img src="logo Mateusz.png" alt="Logo Portal Mateusza" class="site-logo-img">
         </a>
@@ -398,6 +401,18 @@
         }
 
         startProject();
+
+        // Animacja "drżenia" logo bara przy kliknięciu (efekt wbicia gwoździa)
+        const logoContainer = document.getElementById('logoContainer');
+        if (logoContainer) {
+            logoContainer.addEventListener('click', function(e) {
+                // Sprawdź czy kliknięcie nie było w linku (żeby nie blokować nawigacji)
+                if (e.target.closest('a')) return;
+                
+                this.classList.add('clicked');
+                setTimeout(() => this.classList.remove('clicked'), 400);
+            });
+        }
     </script>
     <!-- Modal potwierdzenia usunięcia -->
     <div id="customConfirm" class="modal-overlay">
