@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Mateusza - Final Cloud 🚀</title>
-    <!-- Preconnect dla szybszego ładowania zewnętrznych zasobów -->
+    <!-- Preconnect for faster loading of external resources / Preconnect dla szybszego ładowania zewnętrznych zasobów -->
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://upload-widget.cloudinary.com" crossorigin>
     <link rel="stylesheet" href="style.css">
@@ -14,413 +15,604 @@
     <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"}}</script>
 </head>
 <body>
-    <!-- Logo Bar - Styl "Przybitej Tabliczki" -->
-    <div class="site-logo-container" id="logoContainer">
-        <!-- Śruby dekoracyjne w rogach -->
+    <!-- Header / Nagłówek -->
+    <header class="site-logo-container" id="logoContainer" role="banner">
+        <!-- Decorative screws in corners / Dekoracyjne śruby w rogach -->
         <span class="screw-bottom-left"></span>
         <span class="screw-bottom-right"></span>
-        <a href="./">
-        <img src="logo Mateusz.png" alt="Logo Portal Mateusza" class="site-logo-img">
+        <a href="./" aria-label="Strona główna">
+            <img src="logo Mateusz.png" alt="Logo Portal Mateusza" class="site-logo-img">
         </a>
         <span class="logo-title">Mateusz App</span>
-    </div>
-    <div id="authSection" class="form-section">
-        <div id="loginForm">
-            <input type="email" id="loginEmail" placeholder="Email admina"><input type="password" id="loginPass" placeholder="Hasło">
-            <button id="btnLogin">Zaloguj jako Admin</button>
-        </div>
-        <div id="adminPanel" class="admin-panel">
-            <p>Witaj Adminie! Możesz teraz zarządzać ogłoszeniami.</p>
-            <button id="btnLogout" class="delete-btn admin-logout-btn">Wyloguj</button>
-        </div>
-    </div>
-    <h1>Portal Mateusza <span class="highlight-accent">PORTAL</span></h1>
-    <p id="adCounter" class="ad-counter">Łączenie...</p>
-    <div id="adFormSection" class="form-section">
-        <h2>Dodaj ogłoszenie</h2>
-        <label for="adCategory" class="visually-hidden">Kategoria ogłoszenia</label>
-        <select id="adCategory">
-            <option value="Inne">Inne</option>
-            <option value="Usługi">🛠️ Usługi</option>
-            <option value="Sprzedam">💰 Sprzedam</option>
-            <option value="Praca">💼 Praca</option>
-            <option value="Motoryzacja">🚗 Motoryzacja</option>
-        </select>
-        <input type="text" id="title" placeholder="Tytuł...">
-        <textarea id="content" rows="3" placeholder="Opis przedmiotu..."></textarea>
-        <div class="ad-img-preview-list" id="imgPreview"></div>
-        <button id="upload_widget" class="cloudinary-upload-btn">📸 Wybierz zdjęcia (max 4)</button>
-        <p id="photo-status" class="photo-status">✅ Zdjęcia załadowane!</p>
-        <button id="btnPublish" class="publish-btn">Opublikuj na portalu</button>
-    </div>
+    </header>
 
-    <!-- Wybór filtra kategorii ogłoszeń -->
-    <div class="form-section" id="adFilterSection">
-        <label for="adsCategoryFilter">Pokaż ogłoszenia według kategorii:</label>
-        <select id="adsCategoryFilter">
-            <option value="ALL">Wszystkie kategorie</option>
-            <option value="Inne">Inne</option>
-            <option value="Usługi">🛠️ Usługi</option>
-            <option value="Sprzedam">💰 Sprzedam</option>
-            <option value="Praca">💼 Praca</option>
-            <option value="Motoryzacja">🚗 Motoryzacja</option>
-        </select>
-    </div>
-    <div class="ads-container" id="adsContainer"><h2>Ostatnio dodane</h2></div>
-    <div id="popupToast" class="popup-toast"></div> <!-- Komunikaty popup -->
+    <main role="main">
+        <!-- Authentication section / Sekcja autoryzacji -->
+        <section id="authSection" class="form-section" aria-label="Logowanie administratora">
+            <div id="loginForm">
+                <label for="loginEmail" class="visually-hidden">Email administratora</label>
+                <input type="email" id="loginEmail" placeholder="Email admina" required>
+                <label for="loginPass" class="visually-hidden">Hasło administratora</label>
+                <input type="password" id="loginPass" placeholder="Hasło" required>
+                <button id="btnLogin" type="button">Zaloguj jako Admin</button>
+            </div>
+            <div id="adminPanel" class="admin-panel" hidden>
+                <p>Witaj Adminie! Możesz teraz zarządzać ogłoszeniami.</p>
+                <button id="btnLogout" class="delete-btn admin-logout-btn" type="button">Wyloguj</button>
+            </div>
+        </section>
 
-    <!-- MODAL do powiększania zdjęć w ogłoszeniu -->
-    <div id="imgModal" class="img-modal-overlay">
-        <div class="img-modal-content">
-            <button class="img-modal-close" id="imgModalClose" aria-label="Zamknij powiększone zdjęcie"><span>&times;</span></button>
-            <img src="" alt="Powiększone zdjęcie" id="imgModalImg">
+        <h1>Portal Mateusza <span class="highlight-accent">PORTAL</span></h1>
+        
+        <!-- Advertisement counter / Licznik ogłoszeń -->
+        <p id="adCounter" class="ad-counter" aria-live="polite">Łączenie...</p>
+
+        <!-- Add advertisement form / Formularz dodawania ogłoszenia -->
+        <section id="adFormSection" class="form-section" aria-label="Dodaj ogłoszenie">
+            <h2>Dodaj ogłoszenie</h2>
+            
+            <label for="adCategory" class="visually-hidden">Kategoria ogłoszenia</label>
+            <select id="adCategory" aria-label="Kategoria ogłoszenia">
+                <option value="Inne">Inne</option>
+                <option value="Usługi">🛠️ Usługi</option>
+                <option value="Sprzedam">💰 Sprzedam</option>
+                <option value="Praca">💼 Praca</option>
+                <option value="Motoryzacja">🚗 Motoryzacja</option>
+            </select>
+
+            <label for="title" class="visually-hidden">Tytuł ogłoszenia</label>
+            <input type="text" id="title" placeholder="Tytuł..." aria-required="true" aria-label="Tytuł ogłoszenia">
+
+            <label for="content" class="visually-hidden">Opis ogłoszenia</label>
+            <textarea id="content" rows="3" placeholder="Opis przedmiotu..." aria-required="true" aria-label="Opis ogłoszenia"></textarea>
+
+            <!-- Image preview area / Obszar podglądu zdjęć -->
+            <div class="ad-img-preview-list" id="imgPreview" aria-label="Podgląd załadowanych zdjęć"></div>
+
+            <button id="upload_widget" class="cloudinary-upload-btn" type="button">📸 Wybierz zdjęcia (max 4)</button>
+            <p id="photo-status" class="photo-status" aria-live="polite">✅ Zdjęcia załadowane!</p>
+
+            <button id="btnPublish" class="publish-btn" type="button">Opublikuj na portalu</button>
+        </section>
+
+        <!-- Category filter / Filtr kategorii ogłoszeń -->
+        <section id="adFilterSection" class="form-section" aria-label="Filtrowanie ogłoszeń">
+            <label for="adsCategoryFilter">Pokaż ogłoszenia według kategorii:</label>
+            <select id="adsCategoryFilter" aria-label="Filtruj według kategorii">
+                <option value="ALL">Wszystkie kategorie</option>
+                <option value="Inne">Inne</option>
+                <option value="Usługi">🛠️ Usługi</option>
+                <option value="Sprzedam">💰 Sprzedam</option>
+                <option value="Praca">💼 Praca</option>
+                <option value="Motoryzacja">🚗 Motoryzacja</option>
+            </select>
+        </section>
+
+        <!-- Advertisements container / Kontener ogłoszeń -->
+        <section id="adsContainer" class="ads-container" aria-label="Lista ogłoszeń">
+            <h2>Ostatnio dodane</h2>
+        </section>
+
+        <!-- Toast notifications / Powiadomienia typu toast -->
+        <div id="popupToast" class="popup-toast" role="alert" aria-live="polite"></div>
+
+        <!-- Image modal / Modal do powiększania zdjęć -->
+        <div id="imgModal" class="img-modal-overlay" role="dialog" aria-modal="true" aria-label="Powiększone zdjęcie">
+            <div class="img-modal-content">
+                <button class="img-modal-close" id="imgModalClose" aria-label="Zamknij powiększone zdjęcie">
+                    <span>&times;</span>
+                </button>
+                <img src="" alt="Powiększone zdjęcie ogłoszenia" id="imgModalImg">
+            </div>
         </div>
-    </div>
+
+        <!-- Confirmation modal / Modal potwierdzenia usunięcia -->
+        <div id="customConfirm" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmDesc">
+            <div class="modal-content">
+                <h3 id="confirmTitle">Potwierdź akcję</h3>
+                <p id="confirmDesc">Czy na pewno chcesz usunąć to ogłoszenie?</p>
+                <div class="modal-buttons">
+                    <button id="confirmYes" class="btn-confirm" type="button">TAK</button>
+                    <button id="confirmNo" class="btn-cancel" type="button">NIE</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Optional: można dodać stopkę z informacją o autorze -->
+        <p style="text-align: center; color: #aaa; font-size: 0.9em; margin-top: 40px;">
+            &copy; <span id="currentYear"></span> Portal Mateusza - Wszelkie prawa zastrzeżone
+        </p>
+    </footer>
 
     <script>
-        // Prosty popup na górze ekranu ↓↓↓ (informacje dla użytkownika)
-        function showPopupToast(msg, type=""){const el=document.getElementById('popupToast');el.innerText=msg;el.className='popup-toast'+(type?' '+type:'');el.classList.add('show');clearTimeout(el._timeout);el._timeout=setTimeout(()=>el.classList.remove('show'),2000);}
+        // ============================================
+        // KONFIGURACJA I INICJALIZACJA APLIKACJI
+        // ============================================
+        
+        let db, auth, currentCategoryFilter = "ALL"; // [EN] Global variables for Firebase and state management / [PL] Zmienne globalne dla Firebase i zarządzania stanem aplikacji
+        const MAX_IMAGES = 4; // Maximum images per ad / Maksymalna liczba zdjęć na ogłoszenie
 
-        let db, auth, currentCategoryFilter = "ALL"; // Zmienna do filtru kategorii
-
-        // Start projektu - poprawiona kolejność ładowania: najpierw dane, potem obsługa auth
-        async function startProject() {
+        async function startProject() { // [EN] Initialize the application / [PL] Inicjalizacja aplikacji
             try {
                 const firebaseConfig = await (await fetch('/config')).json();
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore(); 
                 auth = firebase.auth();
-                await displayAds(); // najpierw zawsze pobieraj ogłoszenia dla KAŻDEGO użytkownika (niezależnie od autoryzacji)
+                
+                // Load advertisements first for all users
+                await displayAds();
+                
+                // Setup event listeners
                 setupAuthListener(); 
-                setupButtons(); 
+                setupButtons();
                 setupCategoryFilter();
-                setupImgModal(); // dodane do obsługi powiększania zdjęć
+                setupImgModal();
+                updateCurrentYear();
             } catch (e) {
-                console.error("Błąd startu:",e); 
-                showPopupToast("Błąd startu: "+e.message,"error");
+                console.error("[EN] Startup error:", e); 
+                console.error("[PL] Błąd startu:", e);
+                showPopupToast("Błąd startu: " + e.message, "error");
             }
         }
 
-        // Obsługa logowania/wylogowania oraz przełączania widoku panelu administratora
-        function setupAuthListener() {
-            auth.onAuthStateChanged(user=>{
-                const adForm = document.getElementById('adFormSection'),
-                    loginForm = document.getElementById('loginForm'),
-                    adminPanel = document.getElementById('adminPanel');
-                if(user){
-                    adForm && (adForm.style.display='block');
-                    loginForm.style.display='none';
-                    adminPanel.style.display='block';
+        function updateCurrentYear() { // [EN] Update copyright year dynamically / [PL] Dynamiczna aktualizacja roku w stopce
+            const yearEl = document.getElementById('currentYear');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+        }
+
+        // ============================================
+        // AUTHENTICATION HANDLING
+        // ============================================
+
+        function setupAuthListener() { // [EN] Setup Firebase authentication state listener / [PL] Konfiguracja nasłuchiwacza stanu uwierzytelniania Firebase
+            auth.onAuthStateChanged(user => {
+                const adForm = document.getElementById('adFormSection');
+                const loginForm = document.getElementById('loginForm');
+                const adminPanel = document.getElementById('adminPanel');
+                
+                if (user) {
+                    adForm && (adForm.style.display = 'block');
+                    loginForm.style.display = 'none';
+                    adminPanel.style.display = 'block';
+                    adminPanel.hidden = false;
                     document.body.classList.add('is-admin');
-                    showPopupToast("Jesteś zalogowany jako admin.","success");
+                    showPopupToast("Jesteś zalogowany jako admin.", "success");
                 } else {
-                    adForm && (adForm.style.display='none');
-                    loginForm.style.display='block';
-                    adminPanel.style.display='none';
+                    adForm && (adForm.style.display = 'none');
+                    loginForm.style.display = 'block';
+                    adminPanel.style.display = 'none';
+                    adminPanel.hidden = true;
                     document.body.classList.remove('is-admin');
                 }
-                // NIE wywołuj ponownie displayAds() tutaj! Wywołane tylko podczas startu/profiltrze, nie po zmianie auth
+                // Note: displayAds() is NOT called here to avoid unnecessary re-renders
             });
-            document.getElementById('btnLogin').onclick=async()=>{
+
+            // Login button / Przycisk logowania
+            document.getElementById('btnLogin').onclick = async () => {
                 try {
                     await auth.signInWithEmailAndPassword(
                         document.getElementById('loginEmail').value,
                         document.getElementById('loginPass').value
                     );
-                    showPopupToast("Witaj Adminie!","success");
-                } catch(e){showPopupToast("Błąd: "+e.message,"error");}
+                    showPopupToast("Witaj Adminie!", "success");
+                } catch (e) {
+                    showPopupToast("Błąd: " + e.message, "error");
+                }
             };
-            document.getElementById('btnLogout').onclick=()=>{auth.signOut(); showPopupToast("Wylogowano.","info");};
+
+            // Logout button / Przycisk wylogowania
+            document.getElementById('btnLogout').onclick = () => {
+                auth.signOut();
+                showPopupToast("Wylogowano.", "info");
+            };
         }
 
-        // Wyświetlanie ogłoszeń (zoptymalizowane - jeden innerHTML na koniec)
-        async function displayAds(){
-            const c = document.getElementById('adsContainer');
-            const adCounter = document.getElementById('adCounter');
-            let query = db.collection("ogloszenia").orderBy("timestamp","desc");
+        // ============================================
+        // ADVERTISEMENT DISPLAY
+        // ============================================
+
+        async function displayAds() { // [EN] Fetch and display advertisements from Firestore / [PL] Pobieranie i wyświetlanie ogłoszeń z Firestore
+            const container = document.getElementById('adsContainer');
+            const counter = document.getElementById('adCounter');
+            let query = db.collection("ogloszenia").orderBy("timestamp", "desc");
             
-            // Specjalne traktowanie ogłoszeń bez kategorii lub kategorii "Inne"
+            // Handle "Inne" category separately (ads without category or with empty category)
             if (currentCategoryFilter !== "ALL") {
-                if(currentCategoryFilter==="Inne"){
-                    const all = await query.get(), inneDocs=[];
-                    all.forEach(doc=>{
-                        const ad=doc.data();
-                        if (!ad.category || ad.category==="" || ad.category==="Inne") inneDocs.push(doc);
+                if (currentCategoryFilter === "Inne") {
+                    const allDocs = await query.get();
+                    const filteredDocs = [];
+                    
+                    allDocs.forEach(doc => {
+                        const ad = doc.data();
+                        if (!ad.category || ad.category === "" || ad.category === "Inne") {
+                            filteredDocs.push(doc);
+                        }
                     });
-                    adCounter.innerText="Ogłoszeń: "+inneDocs.length;
-                    // Optymalizacja: budujemy HTML w stringu, jeden innerHTML na końcu
-                    let html = "<h2>Ostatnio dodane</h2>";
-                    inneDocs.forEach(doc=>{ html += adHTML(doc); });
-                    if(inneDocs.length===0) html += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
-                    c.innerHTML = html;
-                    setupAllCarousels();
-                    setupImgClickListeners();
+                    
+                    counter.innerText = "Ogłoszeń: " + filteredDocs.length;
+                    renderAds(container, filteredDocs);
                     return;
                 } else {
                     query = query.where("category", "==", currentCategoryFilter);
                 }
             }
-            const snap = await query.get();
-            adCounter.innerText="Ogłoszeń: "+snap.size;
-            // Optymalizacja: budujemy HTML w stringu
+            
+            const snapshot = await query.get();
+            counter.innerText = "Ogłoszeń: " + snapshot.size;
+            renderAds(container, snapshot.docs);
+        }
+
+        function renderAds(container, docs) { // [EN] Render advertisements HTML in container / [PL] Renderowanie HTML ogłoszeń w kontenerze
             let html = "<h2>Ostatnio dodane</h2>";
-            let empty = true;
-            snap.forEach(doc=>{
-                empty = false;
-                html += adHTML(doc);
+            let hasAds = false;
+
+            docs.forEach(doc => {
+                hasAds = true;
+                html += generateAdHTML(doc);
             });
-            if (empty || snap.empty) html += `<div style="padding:20px;text-align:center;font-size:1.15em;color:#999">Brak ogłoszeń w tej kategorii.</div>`;
-            c.innerHTML = html;
+
+            if (!hasAds) {
+                html += `<div class="no-ads-message">Brak ogłoszeń w tej kategorii.</div>`;
+            }
+
+            container.innerHTML = html;
             setupAllCarousels();
             setupImgClickListeners();
         }
 
-        // Funkcja generująca HTML pojedynczego ogłoszenia, wspierająca galerię zdjęć i karuzelę
-        function adHTML(doc) {
+        function generateAdHTML(doc) { // [EN] Generate HTML for a single advertisement card / [PL] Generowanie HTML pojedynczej karty ogłoszenia
             const ad = doc.data && typeof doc.data === "function" ? doc.data() : {};
-            // Upewniamy się, że są domyślne puste wartości które nie zrywają renderowania
+            
+            // Safe extraction with fallbacks / Bezpieczne pobieranie z fallbackami
             const title = (typeof ad.title === "string" ? ad.title : "") || "(brak tytułu)";
             const content = (typeof ad.content === "string" ? ad.content : "") || "";
-            const category = (typeof ad.category === "string" && ad.category!=="") ? ad.category : "Inne";
+            const category = (typeof ad.category === "string" && ad.category !== "") ? ad.category : "Inne";
             const date = (typeof ad.date === "string" ? ad.date : "") || "";
-            // Obsługa pól obrazów z fallbackiem i brakiem błędu (dopasowane także pod różne nazwy)
-            let imagesArr = [];
-            if(Array.isArray(ad.images) && ad.images.length) {
-                imagesArr = ad.images.filter(Boolean);
-            } else if(Array.isArray(ad.image) && ad.image.length) {
-                imagesArr = ad.image.filter(Boolean);
-            } else if(ad.imageUrl) {
-                // niektórzy stosują "imageUrl": [string] albo samo imageUrl
-                if(Array.isArray(ad.imageUrl)) {
-                    imagesArr = ad.imageUrl.filter(Boolean);
-                } else if(typeof ad.imageUrl === "string" && ad.imageUrl) {
-                    imagesArr = [ad.imageUrl];
-                }
-            } else if(ad.image && typeof ad.image === "string" && ad.image) {
-                imagesArr = [ad.image];
-            }
-            // Zabezpieczenie przed przerywaniem pętli
-            if (!Array.isArray(imagesArr)) imagesArr = [];
-            let carouselHTML = "";
-            if(imagesArr.length > 0){
-                carouselHTML += `<div class="ad-carousel" data-imgcount="${imagesArr.length}" data-adid="${doc.id}">`;
-                carouselHTML += `<button class="carousel-arrow left" style="display:none;" aria-label="Poprzednie zdjęcie">&#8592;</button>`;
-                carouselHTML += `<img src="${imagesArr[0]||''}" loading="lazy" alt="Zdjęcie ogłoszenia" class="img-pop-big" style="max-width:320px;max-height:240px;cursor:zoom-in;">`;
-                carouselHTML += `<button class="carousel-arrow right"${imagesArr.length==1?' style="display:none;"':""} aria-label="Następne zdjęcie">&#8594;</button>`;
-                if(imagesArr.length > 1){
-                    carouselHTML += `<div class="carousel-dots">`;
-                    imagesArr.forEach((_,idx)=>
-                        carouselHTML+=`<span class="carousel-dot${idx==0?' active':''}" data-idx="${idx}"></span>`
-                    );
-                    carouselHTML += `</div>`;
-                }
-                carouselHTML += `</div>`;
-            }
-            return `<div class="ad-card">
-                <button class="delete-btn" onclick="deleteAd('${doc.id}')">Usuń ×</button>
-                <span class="category-badge">${category}</span>
-                <h3>${title}</h3>
-                <p>${content}</p>
-                ${carouselHTML}
-                <br><small>📅 ${date}</small>
-            </div>`;
+
+            // Extract images from various possible field names
+            let imagesArr = extractImages(ad);
+
+            // Generate carousel if multiple images exist
+            const carouselHTML = generateCarouselHTML(imagesArr, doc.id);
+
+            return `
+                <article class="ad-card" data-id="${doc.id}">
+                    <button class="delete-btn" onclick="deleteAd('${doc.id}')" aria-label="Usuń ogłoszenie">Usuń ×</button>
+                    <span class="category-badge">${category}</span>
+                    <h3>${escapeHtml(title)}</h3>
+                    <p>${escapeHtml(content)}</p>
+                    ${carouselHTML}
+                    <time datetime="${date}">📅 ${date}</time>
+                </article>
+            `;
         }
 
-        // Obsługa zmiany kategorii ogłoszeń w filtrze
-        function setupCategoryFilter() {
+        function extractImages(ad) { // [EN] Extract image URLs from advertisement data / [PL] Wyodrębnianie URL obrazów z danych ogłoszenia
+            let images = [];
+            
+            if (Array.isArray(ad.images) && ad.images.length) {
+                images = ad.images.filter(Boolean);
+            } else if (Array.isArray(ad.image) && ad.image.length) {
+                images = ad.image.filter(Boolean);
+            } else if (ad.imageUrl) {
+                if (Array.isArray(ad.imageUrl)) {
+                    images = ad.imageUrl.filter(Boolean);
+                } else if (typeof ad.imageUrl === "string" && ad.imageUrl) {
+                    images = [ad.imageUrl];
+                }
+            } else if (ad.image && typeof ad.image === "string" && ad.image) {
+                images = [ad.image];
+            }
+            
+            return Array.isArray(images) ? images : [];
+        }
+
+        function generateCarouselHTML(images, adId) { // [EN] Generate carousel HTML for multiple images / [PL] Generowanie HTML karuzeli dla wielu zdjęć
+            if (images.length === 0) return "";
+            
+            let html = `<div class="ad-carousel" data-imgcount="${images.length}" data-adid="${adId}">`;
+            html += `<button class="carousel-arrow left" style="display:none;" aria-label="Poprzednie zdjęcie">&#8592;</button>`;
+            html += `<img src="${images[0]}" loading="lazy" alt="Zdjęcie ogłoszenia" class="img-pop-big">`;
+            html += `<button class="carousel-arrow right"${images.length === 1 ? ' style="display:none;"' : ''} aria-label="Następne zdjęcie">&#8594;</button>`;
+            
+            if (images.length > 1) {
+                html += `<div class="carousel-dots">`;
+                images.forEach((_, idx) => {
+                    html += `<span class="carousel-dot${idx === 0 ? ' active' : ''}" data-idx="${idx}"></span>`;
+                });
+                html += `</div>`;
+            }
+            
+            html += `</div>`;
+            
+            // Cache images globally for carousel functionality
+            if (!window._AD_IMAGES) window._AD_IMAGES = {};
+            window._AD_IMAGES[adId] = images;
+            
+            return html;
+        }
+
+        function escapeHtml(text) { // [EN] Escape HTML special characters to prevent XSS / [PL] Escaping znaków HTML dla bezpieczeństwa (XSS prevention)
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // CATEGORY FILTER
+        // ============================================
+
+        function setupCategoryFilter() { // [EN] Setup category filter dropdown / [PL] Konfiguracja dropdowna filtrowania kategorii
             const select = document.getElementById('adsCategoryFilter');
-            select && select.addEventListener('change', function() {
-                currentCategoryFilter = this.value;
-                displayAds();
-            });
+            if (select) {
+                select.addEventListener('change', function() {
+                    currentCategoryFilter = this.value;
+                    displayAds();
+                });
+            }
         }
 
-        // Usuwanie ogłoszenia (panel administratora)
-        window.deleteAd=async(id)=>showDeleteModal(async y=>{
-            if(y) try{
-                await db.collection("ogloszenia").doc(id).delete();
-                showPopupToast("Ogłoszenie usunięte!","success");
-                displayAds();
-            }catch(e){showPopupToast("Błąd podczas usuwania!","error");}
-        });
+        // ============================================
+        // IMAGE UPLOAD & PREVIEW
+        // ============================================
 
-        // Potwierdzenie usunięcia ogłoszenia (modal)
-        function showDeleteModal(cb){
-            const m=document.getElementById('customConfirm'); m.style.display='flex';
-            document.getElementById('confirmYes').onclick=()=>{m.style.display='none';cb(true);};
-            document.getElementById('confirmNo').onclick=()=>{m.style.display='none';cb(false);};
-        }
-
-        // Wiele zdjęć - obsługa uploadu, podglądu i dodania ogłoszenia (maksymalnie 4 zdjęcia)
-        function setupButtons(){
+        function setupButtons() { // [EN] Setup Cloudinary upload widget and image preview / [PL] Konfiguracja widgetu uploadu Cloudinary i podglądu zdjęć
             const imgPreviewDiv = document.getElementById('imgPreview');
-            let images = []; // Tablica linków do załadowanych zdjęć
+            const photoStatus = document.getElementById('photo-status');
+            let images = []; // Array of uploaded image URLs / Tablica URL przesłanych zdjęć
 
-            // Odświeżanie miniaturek przesłanych zdjęć
-            function renderImgPreview(){
+            function renderImgPreview() { // [EN] Render image preview thumbnails / [PL] Renderowanie miniaturek zdjęć
                 imgPreviewDiv.innerHTML = '';
                 images.forEach((url, idx) => {
-                    imgPreviewDiv.innerHTML += `<div style="position:relative;display:inline-block;">
-                        <img src="${url}" />
-                        <button type="button" class="remove-image-btn" title="Usuń to zdjęcie" onclick="removePreviewImg(${idx})">&times;</button>
-                    </div>`;
+                    imgPreviewDiv.innerHTML += `
+                        <div class="preview-item">
+                            <img src="${url}" alt="Podgląd zdjęcia ${idx + 1}">
+                            <button type="button" class="remove-image-btn" 
+                                    onclick="removePreviewImg(${idx})" 
+                                    aria-label="Usuń zdjęcie">×</button>
+                        </div>
+                    `;
                 });
             }
-            // Usuwanie miniaturki (z tablicy linków)
-            window.removePreviewImg = function(idx) {
-                images.splice(idx,1); renderImgPreview();
-                if(images.length===0) document.getElementById('photo-status').style.display='none';
+
+            window.removePreviewImg = function(idx) { // [EN] Remove image from preview / [PL] Usuwanie zdjęcia z podglądu
+                images.splice(idx, 1);
+                renderImgPreview();
+                if (images.length === 0) {
+                    photoStatus.style.display = 'none';
+                }
             };
 
-            // Widget uploadu Cloudinary
-            const w=cloudinary.createUploadWidget({
-                cloudName:'dggnjcnhd',
-                uploadPreset:'strona_8_ml_default',
-                maxFiles: 4,
-                sources: ['local','url','camera','image_search'],
+            const widget = cloudinary.createUploadWidget({ // [EN] Initialize Cloudinary upload widget / [PL] Inicjalizacja widgetu uploadu Cloudinary
+                cloudName: 'dggnjcnhd',
+                uploadPreset: 'strona_8_ml_default',
+                maxFiles: MAX_IMAGES,
+                sources: ['local', 'url', 'camera', 'image_search'],
                 multiple: true,
                 clientAllowedFormats: ["jpg", "png", "jpeg", "webp"],
-                folder: "portal_mateusza_ads" 
-            },(error,res)=>{
-                if(!error&&res.event==="success"&&res.info&&res.info.secure_url){
-                    if(images.length >= 4) {
-                        showPopupToast("Możesz dodać maksymalnie 4 zdjęcia!","error");
+                folder: "portal_mateusza_ads"
+            }, (error, result) => {
+                if (!error && result.event === "success" && result.info && result.info.secure_url) {
+                    if (images.length >= MAX_IMAGES) {
+                        showPopupToast(`Możesz dodać maksymalnie ${MAX_IMAGES} zdjęcia!`, "error");
                         return;
                     }
-                    images.push(res.info.secure_url);
+                    images.push(result.info.secure_url);
                     renderImgPreview();
-                    document.getElementById('photo-status').style.display='block';
-                    showPopupToast("Zdjęcie załadowane.","success");
+                    photoStatus.style.display = 'block';
+                    showPopupToast("Zdjęcie załadowane.", "success");
                 }
             });
-            document.getElementById("upload_widget").onclick=()=>{
-                if(images.length>=4){ showPopupToast("Możesz dodać maksymalnie 4 zdjęcia!","error"); return; }
-                w.open();
+
+            document.getElementById('upload_widget').onclick = () => { // [EN] Upload button click handler / [PL] Obsługa kliknięcia przycisku uploadu
+                if (images.length >= MAX_IMAGES) {
+                    showPopupToast(`Możesz dodać maksymalnie ${MAX_IMAGES} zdjęć!`, "error");
+                    return;
+                }
+                widget.open();
             };
-            document.getElementById('btnPublish').onclick=async()=>{
-                const t=document.getElementById('title').value, co=document.getElementById('content').value, ca=document.getElementById('adCategory')?.value||"Inne";
-                if(!t||!co) return showPopupToast("Wypełnij tytuł i opis!","error");
-                if(images.length === 0) return showPopupToast("Dodaj chociaż jedno zdjęcie!","error");
-                try{
+
+            document.getElementById('btnPublish').onclick = async () => { // [EN] Publish advertisement button handler / [PL] Obsługa przycisku publikacji ogłoszenia
+                const title = document.getElementById('title').value.trim();
+                const content = document.getElementById('content').value.trim();
+                const category = document.getElementById('adCategory')?.value || "Inne";
+
+                // Validation / Walidacja
+                if (!title || !content) {
+                    return showPopupToast("Wypełnij tytuł i opis!", "error");
+                }
+                if (images.length === 0) {
+                    return showPopupToast("Dodaj chociaż jedno zdjęcie!", "error");
+                }
+
+                try {
                     await db.collection("ogloszenia").add({
-                        title:t,content:co,category:ca,
-                        images:images,
-                        date:new Date().toLocaleString('pl-PL'),
-                        timestamp:firebase.firestore.FieldValue.serverTimestamp()
+                        title: title,
+                        content: content,
+                        category: category,
+                        images: images,
+                        date: new Date().toLocaleString('pl-PL'),
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    showPopupToast("Ogłoszenie opublikowane!","success");
-                    setTimeout(()=>location.reload(),900);
-                }catch(e){
-                    console.error("Błąd publikacji:",e);
-                    showPopupToast("Błąd podczas publikacji!","error");
+                    
+                    showPopupToast("Ogłoszenie opublikowane!", "success");
+                    
+                    // Clear form and reload
+                    setTimeout(() => location.reload(), 900);
+                } catch (e) {
+                    console.error("[EN] Publish error:", e);
+                    console.error("[PL] Błąd publikacji:", e);
+                    showPopupToast("Błąd podczas publikacji!", "error");
                 }
             };
         }
 
-        // Obsługa karuzeli zdjęć w ogłoszeniu (przewijanie strzałkami/dotami)
-        function setupAllCarousels(){
-            document.querySelectorAll('.ad-carousel').forEach(carousel=>{
-                let imgCount = parseInt(carousel.getAttribute('data-imgcount'),10) || 1;
-                if(imgCount<2) return;
+        // ============================================
+        // CAROUSEL FUNCTIONALITY
+        // ============================================
+
+        function setupAllCarousels() { // [EN] Setup carousel navigation for all advertisements / [PL] Konfiguracja nawigacji karuzeli dla wszystkich ogłoszeń
+            document.querySelectorAll('.ad-carousel').forEach(carousel => {
+                const imgCount = parseInt(carousel.getAttribute('data-imgcount'), 10) || 1;
+                if (imgCount < 2) return;
+                
                 const adId = carousel.getAttribute('data-adid');
-                if(!window._AD_IMAGES) window._AD_IMAGES = {};
-                const allImages = window._AD_IMAGES[adId];
-                if(!allImages) return;
-                let imgEl = carousel.querySelector('img');
-                let leftBtn = carousel.querySelector('.carousel-arrow.left');
-                let rightBtn = carousel.querySelector('.carousel-arrow.right');
-                let dots = carousel.querySelectorAll('.carousel-dot');
-                let curr = 0;
-                function showImg(idx){
-                    idx = +idx;
-                    if(idx<0) idx = allImages.length-1;
-                    if(idx>=allImages.length) idx = 0;
-                    curr = idx;
-                    imgEl.src = allImages[curr];
-                    leftBtn.style.display = curr===0 ? 'none':'';
-                    rightBtn.style.display = curr===allImages.length-1 ? 'none':'';
-                    dots.forEach((dot, j)=>dot.classList.toggle('active', j===curr));
+                const allImages = window._AD_IMAGES && window._AD_IMAGES[adId];
+                
+                if (!allImages) return;
+
+                const imgEl = carousel.querySelector('img');
+                const leftBtn = carousel.querySelector('.carousel-arrow.left');
+                const rightBtn = carousel.querySelector('.carousel-arrow.right');
+                const dots = carousel.querySelectorAll('.carousel-dot');
+                let currentIndex = 0;
+
+                function showImage(index) { // [EN] Show specific image index / [PL] Wyświetlanie konkretnego indeksu obrazu
+                    currentIndex = index;
+                    if (currentIndex < 0) currentIndex = allImages.length - 1;
+                    if (currentIndex >= allImages.length) currentIndex = 0;
+                    
+                    imgEl.src = allImages[currentIndex];
+                    leftBtn.style.display = currentIndex === 0 ? 'none' : '';
+                    rightBtn.style.display = currentIndex === allImages.length - 1 ? 'none' : '';
+                    
+                    dots.forEach((dot, j) => {
+                        dot.classList.toggle('active', j === currentIndex);
+                    });
                 }
-                if(leftBtn) leftBtn.addEventListener('click',()=>showImg(curr-1));
-                if(rightBtn) rightBtn.addEventListener('click',()=>showImg(curr+1));
-                dots.forEach(dot=>{
-                    dot.onclick = ()=>showImg(parseInt(dot.getAttribute('data-idx'),10));
+
+                // Event listeners for arrows / Nasłuchiwacze dla strzałek
+                if (leftBtn) leftBtn.addEventListener('click', () => showImage(currentIndex - 1));
+                if (rightBtn) rightBtn.addEventListener('click', () => showImage(currentIndex + 1));
+
+                // Event listeners for dots / Nasłuchiwacze kropek
+                dots.forEach(dot => {
+                    dot.onclick = () => showImage(parseInt(dot.getAttribute('data-idx'), 10));
                 });
-                showImg(0);
+
+                // Initialize with first image / Inicjalizacja pierwszym obrazem
+                showImage(0);
             });
         }
 
-        // Przechowywanie zdjęć ogłoszenia (do karuzeli) - cache globalny
-        const _orig_adHTML = adHTML;
-        adHTML = function(doc){
-            const ad = doc.data && typeof doc.data === "function" ? doc.data() : {};
-            let imgs = [];
-            if(Array.isArray(ad.images) && ad.images.length) imgs = ad.images.filter(Boolean);
-            else if(Array.isArray(ad.image) && ad.image.length) imgs = ad.image.filter(Boolean);
-            else if(ad.imageUrl) {
-                if(Array.isArray(ad.imageUrl)) imgs = ad.imageUrl.filter(Boolean);
-                else if(typeof ad.imageUrl === "string" && ad.imageUrl) imgs = [ad.imageUrl];
-            }
-            else if(ad.image && typeof ad.image === "string" && ad.image) imgs = [ad.image];
-            if(!window._AD_IMAGES) window._AD_IMAGES = {};
-            window._AD_IMAGES[doc.id] = imgs;
-            return _orig_adHTML(doc);
-        };
+        // ============================================
+        // IMAGE MODAL (ZOOM)
+        // ============================================
 
-        // Dodanie obsługi kliknięcia na zdjęcie ogłoszenia, aby je powiększyć
-        function setupImgClickListeners() {
-            document.querySelectorAll('.ad-carousel img.img-pop-big').forEach(img=>{
-                img.onclick=function(e){
-                    // ustaw src modalowi na aktualne src klikniętego img
-                    let modal = document.getElementById('imgModal');
-                    let modalImg = document.getElementById('imgModalImg');
+        function setupImgClickListeners() { // [EN] Setup modal for enlarged image view / [PL] Konfiguracja modalu do powiększonego widoku zdjęć
+            document.querySelectorAll('.ad-carousel img.img-pop-big').forEach(img => {
+                img.onclick = function(e) {
+                    const modal = document.getElementById('imgModal');
+                    const modalImg = document.getElementById('imgModalImg');
                     modalImg.src = img.src;
                     modal.classList.add('active');
                     e.stopPropagation();
                 };
             });
         }
-        // Obsługa zamykania modala powiększonego zdjęcia
-        function setupImgModal(){
+
+        function setupImgModal() {
             const modal = document.getElementById('imgModal');
             const closeBtn = document.getElementById('imgModalClose');
             const img = document.getElementById('imgModalImg');
-            closeBtn.onclick = ()=>{ modal.classList.remove('active'); img.src=''; };
-            modal.onclick = function(e){
-                if(e.target===modal){ modal.classList.remove('active'); img.src=''; }
+
+            // Close button / Przycisk zamknięcia
+            closeBtn.onclick = () => {
+                modal.classList.remove('active');
+                img.src = '';
             };
-            // Esc klawisz do zamykania
-            document.addEventListener('keydown',function(e){
-                if(e.key==="Escape"&&modal.classList.contains('active')){
-                    modal.classList.remove('active'); img.src='';
+
+            // Close on clicking outside / Zamknięcie po kliknięciu na tło
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    img.src = '';
+                }
+            };
+
+            // Close on Escape key / Zamknięcie klawiszem Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                    img.src = '';
                 }
             });
         }
 
-        startProject();
+        // ============================================
+        // DELETE FUNCTIONALITY
+        // ============================================
 
-        // Animacja "drżenia" logo bara przy kliknięciu (efekt wbicia gwoździa)
-        const logoContainer = document.getElementById('logoContainer');
+        window.deleteAd = async (id) => showDeleteModal(async (confirmed) => { // [EN] Delete advertisement (admin only) / [PL] Usuwanie ogłoszenia (tylko admin)
+            if (confirmed) {
+                try {
+                    await db.collection("ogloszenia").doc(id).delete();
+                    showPopupToast("Ogłoszenie usunięte!", "success");
+                    displayAds();
+                } catch (e) {
+                    showPopupToast("Błąd podczas usuwania!", "error");
+                }
+            }
+        });
+
+        function showDeleteModal(callback) { // [EN] Show confirmation modal before deletion / [PL] Wyświetlanie modala potwierdzenia przed usunięciem
+            const modal = document.getElementById('customConfirm');
+            modal.style.display = 'flex';
+            
+            const yesBtn = document.getElementById('confirmYes');
+            const noBtn = document.getElementById('confirmNo');
+            
+            // Clean up previous listeners / Oczyszczenie poprzednich listenerów
+            const newYes = yesBtn.cloneNode(true);
+            const newNo = noBtn.cloneNode(true);
+            yesBtn.parentNode.replaceChild(newYes, yesBtn);
+            noBtn.parentNode.replaceChild(newNo, noBtn);
+            
+            newYes.onclick = () => {
+                modal.style.display = 'none';
+                callback(true);
+            };
+            
+            newNo.onclick = () => {
+                modal.style.display = 'none';
+                callback(false);
+            };
+        }
+
+        // ============================================
+        // TOAST NOTIFICATIONS
+        // ============================================
+
+        function showPopupToast(message, type = "") { // [EN] Show temporary notification message / [PL] Wyświetlanie czasowej wiadomości powiadomienia
+            const toast = document.getElementById('popupToast');
+            toast.innerText = message;
+            toast.className = 'popup-toast' + (type ? ' ' + type : '');
+            toast.classList.add('show');
+            
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // ============================================
+        // LOGO INTERACTION
+        // ============================================
+
+        const logoContainer = document.getElementById('logoContainer'); // [EN] Add "nail hit" animation to logo on click / [PL] Dodanie animacji "wbicia gwoździa" do logo po kliknięciu
         if (logoContainer) {
             logoContainer.addEventListener('click', function(e) {
-                // Sprawdź czy kliknięcie nie było w linku (żeby nie blokować nawigacji)
+                // Don't navigate if clicking on the link itself / Nie nawiguj jeśli kliknięto w link
                 if (e.target.closest('a')) return;
                 
                 this.classList.add('clicked');
                 setTimeout(() => this.classList.remove('clicked'), 400);
             });
         }
+
+        document.addEventListener('DOMContentLoaded', startProject); // [EN] Start application when DOM is ready / [PL] Uruchomienie aplikacji po załadowaniu DOM
     </script>
-    <!-- Modal potwierdzenia usunięcia -->
-    <div id="customConfirm" class="modal-overlay">
-        <div class="modal-content">
-            <h3>Potwierdź akcję</h3>  <!-- Tytuł okienka -->
-            <p>Czy na pewno chcesz usunąć to ogłoszenie?</p> <!-- Krótkie pytanie -->
-            <div class="modal-buttons">
-                <button id="confirmYes" class="btn-confirm">TAK</button> <!-- Tak -->
-                <button id="confirmNo" class="btn-cancel">NIE</button> <!-- Nie -->
-            </div>
-        </div>
-    </div>
 </body>
 </html>
