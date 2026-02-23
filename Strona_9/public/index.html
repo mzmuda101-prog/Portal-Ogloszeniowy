@@ -1,10 +1,10 @@
+<!-- [EN] Portal-Ogłoszeniowy project - Mateusz User 2026 / [PL] projekt Portal-Ogłoszeniowy - Mateusz User 2026 -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Mateusza - Final Cloud 🚀</title>
-    <!-- Preconnect for faster loading of external resources / Preconnect dla szybszego ładowania zewnętrznych zasobów -->
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://upload-widget.cloudinary.com" crossorigin>
     <link rel="stylesheet" href="style.css">
@@ -15,9 +15,7 @@
     <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"}}</script>
 </head>
 <body>
-    <!-- Header / Nagłówek -->
     <header class="site-logo-container" id="logoContainer" role="banner">
-        <!-- Decorative screws in corners / Dekoracyjne śruby w rogach -->
         <span class="screw-bottom-left"></span>
         <span class="screw-bottom-right"></span>
         <a href="./" aria-label="Strona główna">
@@ -27,7 +25,6 @@
     </header>
 
     <main role="main">
-        <!-- Authentication section / Sekcja autoryzacji -->
         <section id="authSection" class="form-section" aria-label="Logowanie administratora">
             <div id="loginForm">
                 <label for="loginEmail" class="visually-hidden">Email administratora</label>
@@ -44,10 +41,8 @@
 
         <h1>Portal Mateusza <span class="highlight-accent">PORTAL</span></h1>
         
-        <!-- Advertisement counter / Licznik ogłoszeń -->
         <p id="adCounter" class="ad-counter" aria-live="polite">Łączenie...</p>
 
-        <!-- Add advertisement form / Formularz dodawania ogłoszenia -->
         <section id="adFormSection" class="form-section" aria-label="Dodaj ogłoszenie">
             <h2>Dodaj ogłoszenie</h2>
             
@@ -66,7 +61,6 @@
             <label for="content" class="visually-hidden">Opis ogłoszenia</label>
             <textarea id="content" rows="3" placeholder="Opis przedmiotu..." aria-required="true" aria-label="Opis ogłoszenia"></textarea>
 
-            <!-- Image preview area / Obszar podglądu zdjęć -->
             <div class="ad-img-preview-list" id="imgPreview" aria-label="Podgląd załadowanych zdjęć"></div>
 
             <button id="upload_widget" class="cloudinary-upload-btn" type="button">📸 Wybierz zdjęcia (max 4)</button>
@@ -75,7 +69,6 @@
             <button id="btnPublish" class="publish-btn" type="button">Opublikuj na portalu</button>
         </section>
 
-        <!-- Category filter / Filtr kategorii ogłoszeń -->
         <section id="adFilterSection" class="form-section" aria-label="Filtrowanie ogłoszeń">
             <label for="adsCategoryFilter">Pokaż ogłoszenia według kategorii:</label>
             <select id="adsCategoryFilter" aria-label="Filtruj według kategorii">
@@ -88,15 +81,12 @@
             </select>
         </section>
 
-        <!-- Advertisements container / Kontener ogłoszeń -->
         <section id="adsContainer" class="ads-container" aria-label="Lista ogłoszeń">
             <h2>Ostatnio dodane</h2>
         </section>
 
-        <!-- Toast notifications / Powiadomienia typu toast -->
         <div id="popupToast" class="popup-toast" role="alert" aria-live="polite"></div>
 
-        <!-- Image modal / Modal do powiększania zdjęć -->
         <div id="imgModal" class="img-modal-overlay" role="dialog" aria-modal="true" aria-label="Powiększone zdjęcie">
             <div class="img-modal-content">
                 <button class="img-modal-close" id="imgModalClose" aria-label="Zamknij powiększone zdjęcie">
@@ -106,7 +96,6 @@
             </div>
         </div>
 
-        <!-- Confirmation modal / Modal potwierdzenia usunięcia -->
         <div id="customConfirm" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmDesc">
             <div class="modal-content">
                 <h3 id="confirmTitle">Potwierdź akcję</h3>
@@ -120,36 +109,27 @@
     </main>
 
     <footer>
-        <!-- Optional: można dodać stopkę z informacją o autorze -->
-        <p style="text-align: center; color: #aaa; font-size: 0.9em; margin-top: 40px;">
+        <p class="footer-copyright">
             &copy; <span id="currentYear"></span> Portal Mateusza - Wszelkie prawa zastrzeżone
         </p>
     </footer>
 
     <script>
-        // ============================================
-        // KONFIGURACJA I INICJALIZACJA APLIKACJI
-        // ============================================
-        
-        let db, auth, currentCategoryFilter = "ALL"; // [EN] Global variables for Firebase and state management / [PL] Zmienne globalne dla Firebase i zarządzania stanem aplikacji
-        const MAX_IMAGES = 4; // Maximum images per ad / Maksymalna liczba zdjęć na ogłoszenie
+        let db, auth, currentCategoryFilter = "ALL"; // [EN] Firebase DB, Auth and UI filter state / [PL] Firebase DB, Auth i stan filtra UI
+        const MAX_IMAGES = 4; // [EN] Max images per advertisement / [PL] Maksymalna liczba zdjęć na ogłoszenie
 
-        async function startProject() { // [EN] Initialize the application / [PL] Inicjalizacja aplikacji
+        async function startProject() { // [EN] Initialize / [PL] Inicjalizacja
             try {
-                const firebaseConfig = await (await fetch('/config')).json();
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore(); 
-                auth = firebase.auth();
-                
-                // Load advertisements first for all users
-                await displayAds();
-                
-                // Setup event listeners
-                setupAuthListener(); 
-                setupButtons();
-                setupCategoryFilter();
-                setupImgModal();
-                updateCurrentYear();
+                const firebaseConfig = await (await fetch('/config')).json(); // [EN] Load Firebase config / [PL] Ładuj konfigurację Firebase
+                firebase.initializeApp(firebaseConfig); // [EN] Init Firebase / [PL] Inicjalizacja Firebase
+                db = firebase.firestore(); // [EN] Firestore reference / [PL] Referencja Firestore
+                auth = firebase.auth(); // [EN] Auth instance / [PL] Instancja Auth
+                await displayAds(); // [EN] Load ads / [PL] Wczytaj ogłoszenia
+                setupAuthListener(); // [EN] Setup auth / [PL] Ustaw uwierzytelnianie
+                setupButtons(); // [EN] Upload & preview / [PL] Upload i podgląd
+                setupCategoryFilter(); // [EN] Category dropdown / [PL] Dropdown kategorii
+                setupImgModal(); // [EN] Image modal / [PL] Modal obrazów
+                updateCurrentYear(); // [EN] Update footer year / [PL] Rok w stopce
             } catch (e) {
                 console.error("[EN] Startup error:", e); 
                 console.error("[PL] Błąd startu:", e);
@@ -157,40 +137,27 @@
             }
         }
 
-        function updateCurrentYear() { // [EN] Update copyright year dynamically / [PL] Dynamiczna aktualizacja roku w stopce
-            const yearEl = document.getElementById('currentYear');
-            if (yearEl) yearEl.textContent = new Date().getFullYear();
+        function updateCurrentYear() { // [EN] Set current year in footer / [PL] Ustaw bieżący rok w stopce
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
         }
 
-        // ============================================
-        // AUTHENTICATION HANDLING
-        // ============================================
-
-        function setupAuthListener() { // [EN] Setup Firebase authentication state listener / [PL] Konfiguracja nasłuchiwacza stanu uwierzytelniania Firebase
+        // AUTH
+        function setupAuthListener() { // [EN] Listen to auth state changes / [PL] Nasłuchuj zmian stanu uwierzytelniania
             auth.onAuthStateChanged(user => {
+                const isAdmin = !!user;
                 const adForm = document.getElementById('adFormSection');
                 const loginForm = document.getElementById('loginForm');
                 const adminPanel = document.getElementById('adminPanel');
                 
-                if (user) {
-                    adForm && (adForm.style.display = 'block');
-                    loginForm.style.display = 'none';
-                    adminPanel.style.display = 'block';
-                    adminPanel.hidden = false;
-                    document.body.classList.add('is-admin');
-                    showPopupToast("Jesteś zalogowany jako admin.", "success");
-                } else {
-                    adForm && (adForm.style.display = 'none');
-                    loginForm.style.display = 'block';
-                    adminPanel.style.display = 'none';
-                    adminPanel.hidden = true;
-                    document.body.classList.remove('is-admin');
-                }
-                // Note: displayAds() is NOT called here to avoid unnecessary re-renders
+                adForm.style.display = isAdmin ? 'block' : 'none';
+                loginForm.style.display = isAdmin ? 'none' : 'block';
+                adminPanel.style.display = isAdmin ? 'block' : 'none';
+                adminPanel.hidden = !isAdmin;
+                document.body.classList.toggle('is-admin', isAdmin);
+                if (isAdmin) showPopupToast("Jesteś zalogowany jako admin.", "success");
             });
 
-            // Login button / Przycisk logowania
-            document.getElementById('btnLogin').onclick = async () => {
+            document.getElementById('btnLogin').onclick = async () => { // [EN] Admin login / [PL] Logowanie admina
                 try {
                     await auth.signInWithEmailAndPassword(
                         document.getElementById('loginEmail').value,
@@ -202,81 +169,53 @@
                 }
             };
 
-            // Logout button / Przycisk wylogowania
-            document.getElementById('btnLogout').onclick = () => {
+            document.getElementById('btnLogout').onclick = () => { // [EN] Admin logout / [PL] Wylogowanie admina
                 auth.signOut();
                 showPopupToast("Wylogowano.", "info");
             };
         }
 
-        // ============================================
-        // ADVERTISEMENT DISPLAY
-        // ============================================
-
-        async function displayAds() { // [EN] Fetch and display advertisements from Firestore / [PL] Pobieranie i wyświetlanie ogłoszeń z Firestore
+        // ADS DISPLAY
+        async function displayAds() { // [EN] Fetch & render ads / [PL] Pobierz i wyświetl ogłoszenia
             const container = document.getElementById('adsContainer');
             const counter = document.getElementById('adCounter');
-            let query = db.collection("ogloszenia").orderBy("timestamp", "desc");
-            
-            // Handle "Inne" category separately (ads without category or with empty category)
-            if (currentCategoryFilter !== "ALL") {
-                if (currentCategoryFilter === "Inne") {
-                    const allDocs = await query.get();
-                    const filteredDocs = [];
-                    
-                    allDocs.forEach(doc => {
-                        const ad = doc.data();
-                        if (!ad.category || ad.category === "" || ad.category === "Inne") {
-                            filteredDocs.push(doc);
-                        }
-                    });
-                    
-                    counter.innerText = "Ogłoszeń: " + filteredDocs.length;
-                    renderAds(container, filteredDocs);
-                    return;
-                } else {
-                    query = query.where("category", "==", currentCategoryFilter);
-                }
+            const baseQuery = db.collection("ogloszenia").orderBy("timestamp", "desc");
+            let docs;
+
+            if (currentCategoryFilter === "ALL") {
+                const snapshot = await baseQuery.get();
+                docs = snapshot.docs;
+            } else if (currentCategoryFilter === "Inne") {
+                const allDocs = await baseQuery.get();
+                docs = allDocs.filter(doc => {
+                    const ad = doc.data();
+                    return !ad.category || ad.category === "" || ad.category === "Inne";
+                });
+            } else {
+                const snapshot = await baseQuery.where("category", "==", currentCategoryFilter).get();
+                docs = snapshot.docs;
             }
-            
-            const snapshot = await query.get();
-            counter.innerText = "Ogłoszeń: " + snapshot.size;
-            renderAds(container, snapshot.docs);
+
+            counter.innerText = "Ogłoszeń: " + docs.length;
+            renderAds(container, docs);
         }
 
-        function renderAds(container, docs) { // [EN] Render advertisements HTML in container / [PL] Renderowanie HTML ogłoszeń w kontenerze
-            let html = "<h2>Ostatnio dodane</h2>";
-            let hasAds = false;
-
-            docs.forEach(doc => {
-                hasAds = true;
-                html += generateAdHTML(doc);
-            });
-
-            if (!hasAds) {
-                html += `<div class="no-ads-message">Brak ogłoszeń w tej kategorii.</div>`;
-            }
-
+        function renderAds(container, docs) { // [EN] Render HTML list of ads / [PL] Renderuj listę ogłoszeń w HTML
+            const html = docs.length
+                ? '<h2>Ostatnio dodane</h2>' + docs.map(generateAdHTML).join('')
+                : '<h2>Ostatnio dodane</h2><div class="no-ads-message">Brak ogłoszeń w tej kategorii.</div>';
             container.innerHTML = html;
             setupAllCarousels();
             setupImgClickListeners();
         }
 
-        function generateAdHTML(doc) { // [EN] Generate HTML for a single advertisement card / [PL] Generowanie HTML pojedynczej karty ogłoszenia
-            const ad = doc.data && typeof doc.data === "function" ? doc.data() : {};
-            
-            // Safe extraction with fallbacks / Bezpieczne pobieranie z fallbackami
-            const title = (typeof ad.title === "string" ? ad.title : "") || "(brak tytułu)";
-            const content = (typeof ad.content === "string" ? ad.content : "") || "";
-            const category = (typeof ad.category === "string" && ad.category !== "") ? ad.category : "Inne";
-            const date = (typeof ad.date === "string" ? ad.date : "") || "";
-
-            // Extract images from various possible field names
-            let imagesArr = extractImages(ad);
-
-            // Generate carousel if multiple images exist
-            const carouselHTML = generateCarouselHTML(imagesArr, doc.id);
-
+        function generateAdHTML(doc) { // [EN] Generate HTML for one ad card / [PL] Generuj HTML dla jednej karty ogłoszenia
+            const ad = (doc.data && typeof doc.data === "function") ? doc.data() : {};
+            const title = typeof ad.title === "string" ? ad.title : "(brak tytułu)";
+            const content = typeof ad.content === "string" ? ad.content : "";
+            const category = typeof ad.category === "string" && ad.category ? ad.category : "Inne";
+            const date = typeof ad.date === "string" ? ad.date : "";
+            const carouselHTML = generateCarouselHTML(extractImages(ad), doc.id);
             return `
                 <article class="ad-card" data-id="${doc.id}">
                     <button class="delete-btn" onclick="deleteAd('${doc.id}')" aria-label="Usuń ogłoszenie">Usuń ×</button>
@@ -289,103 +228,66 @@
             `;
         }
 
-        function extractImages(ad) { // [EN] Extract image URLs from advertisement data / [PL] Wyodrębnianie URL obrazów z danych ogłoszenia
-            let images = [];
-            
-            if (Array.isArray(ad.images) && ad.images.length) {
-                images = ad.images.filter(Boolean);
-            } else if (Array.isArray(ad.image) && ad.image.length) {
-                images = ad.image.filter(Boolean);
-            } else if (ad.imageUrl) {
-                if (Array.isArray(ad.imageUrl)) {
-                    images = ad.imageUrl.filter(Boolean);
-                } else if (typeof ad.imageUrl === "string" && ad.imageUrl) {
-                    images = [ad.imageUrl];
-                }
-            } else if (ad.image && typeof ad.image === "string" && ad.image) {
-                images = [ad.image];
-            }
-            
-            return Array.isArray(images) ? images : [];
+        function extractImages(ad) { // [EN] Extract image URLs from ad data / [PL] Wyodrębnij URL obrazów z danych ogłoszenia
+            const images = ad.images || ad.image || ad.imageUrl;
+            if (Array.isArray(images)) return images.filter(Boolean);
+            if (typeof images === "string") return images ? [images] : [];
+            return [];
         }
 
-        function generateCarouselHTML(images, adId) { // [EN] Generate carousel HTML for multiple images / [PL] Generowanie HTML karuzeli dla wielu zdjęć
-            if (images.length === 0) return "";
-            
-            let html = `<div class="ad-carousel" data-imgcount="${images.length}" data-adid="${adId}">`;
-            html += `<button class="carousel-arrow left" style="display:none;" aria-label="Poprzednie zdjęcie">&#8592;</button>`;
-            html += `<img src="${images[0]}" loading="lazy" alt="Zdjęcie ogłoszenia" class="img-pop-big">`;
-            html += `<button class="carousel-arrow right"${images.length === 1 ? ' style="display:none;"' : ''} aria-label="Następne zdjęcie">&#8594;</button>`;
-            
-            if (images.length > 1) {
-                html += `<div class="carousel-dots">`;
-                images.forEach((_, idx) => {
-                    html += `<span class="carousel-dot${idx === 0 ? ' active' : ''}" data-idx="${idx}"></span>`;
-                });
-                html += `</div>`;
-            }
-            
-            html += `</div>`;
-            
-            // Cache images globally for carousel functionality
-            if (!window._AD_IMAGES) window._AD_IMAGES = {};
+        function generateCarouselHTML(images, adId) { // [EN] Build carousel HTML markup / [PL] Buduj markup HTML karuzeli
+            if (!images.length) return "";
+            const hasDots = images.length > 1;
+            const dotsHTML = hasDots ? `<div class="carousel-dots">${images.map((_, i) => `<span class="carousel-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></span>`).join('')}</div>` : '';
+            window._AD_IMAGES = window._AD_IMAGES || {};
             window._AD_IMAGES[adId] = images;
-            
-            return html;
+            return `
+                <div class="ad-carousel" data-imgcount="${images.length}" data-adid="${adId}">
+                    <button class="carousel-arrow left" style="display:none;" aria-label="Poprzednie zdjęcie">&#8592;</button>
+                    <img src="${images[0]}" loading="lazy" alt="Zdjęcie ogłoszenia" class="img-pop-big">
+                    <button class="carousel-arrow"${hasDots ? '' : ' style="display:none;"'} aria-label="Następne zdjęcie">&#8594;</button>
+                    ${dotsHTML}
+                </div>
+            `;
         }
 
-        function escapeHtml(text) { // [EN] Escape HTML special characters to prevent XSS / [PL] Escaping znaków HTML dla bezpieczeństwa (XSS prevention)
+        function escapeHtml(text) { // [EN] Prevent XSS by escaping / [PL] Zapobiega XSS przez escaping
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // ============================================
-        // CATEGORY FILTER
-        // ============================================
-
-        function setupCategoryFilter() { // [EN] Setup category filter dropdown / [PL] Konfiguracja dropdowna filtrowania kategorii
+        // FILTER
+        function setupCategoryFilter() { // [EN] Setup category dropdown / [PL] Ustaw dropdown kategorii
             const select = document.getElementById('adsCategoryFilter');
-            if (select) {
-                select.addEventListener('change', function() {
-                    currentCategoryFilter = this.value;
-                    displayAds();
-                });
-            }
+            select?.addEventListener('change', () => {
+                currentCategoryFilter = select.value;
+                displayAds();
+            });
         }
 
-        // ============================================
-        // IMAGE UPLOAD & PREVIEW
-        // ============================================
+        // UPLOAD & PREVIEW
+        function setupButtons() { // [EN] Setup Cloudinary upload and preview / [PL] Ustaw upload Cloudinary i podgląd
+            const imgPreviewDiv = document.getElementById('imgPreview'); // [EN] Preview container / [PL] Kontener podglądu
+            const photoStatus = document.getElementById('photo-status'); // [EN] Status message element / [PL] Element wiadomości statusu
+            let images = []; // [EN] Uploaded images array / [PL] Tablica przesłanych obrazów
 
-        function setupButtons() { // [EN] Setup Cloudinary upload widget and image preview / [PL] Konfiguracja widgetu uploadu Cloudinary i podglądu zdjęć
-            const imgPreviewDiv = document.getElementById('imgPreview');
-            const photoStatus = document.getElementById('photo-status');
-            let images = []; // Array of uploaded image URLs / Tablica URL przesłanych zdjęć
-
-            function renderImgPreview() { // [EN] Render image preview thumbnails / [PL] Renderowanie miniaturek zdjęć
-                imgPreviewDiv.innerHTML = '';
-                images.forEach((url, idx) => {
-                    imgPreviewDiv.innerHTML += `
-                        <div class="preview-item">
-                            <img src="${url}" alt="Podgląd zdjęcia ${idx + 1}">
-                            <button type="button" class="remove-image-btn" 
-                                    onclick="removePreviewImg(${idx})" 
-                                    aria-label="Usuń zdjęcie">×</button>
-                        </div>
-                    `;
-                });
-            }
-
-            window.removePreviewImg = function(idx) { // [EN] Remove image from preview / [PL] Usuwanie zdjęcia z podglądu
-                images.splice(idx, 1);
-                renderImgPreview();
-                if (images.length === 0) {
-                    photoStatus.style.display = 'none';
-                }
+            const renderImgPreview = () => { // [EN] Render preview thumbnails / [PL] Renderuj miniaturki podglądu
+                imgPreviewDiv.innerHTML = images.map((url, idx) => `
+                    <div class="preview-item">
+                        <img src="${url}" alt="Podgląd zdjęcia ${idx + 1}">
+                        <button type="button" class="remove-image-btn" onclick="removePreviewImg(${idx})" aria-label="Usuń zdjęcie">×</button>
+                    </div>
+                `).join('');
             };
 
-            const widget = cloudinary.createUploadWidget({ // [EN] Initialize Cloudinary upload widget / [PL] Inicjalizacja widgetu uploadu Cloudinary
+            window.removePreviewImg = idx => { // [EN] Remove image from preview / [PL] Usuń zdjęcie z podglądu
+                images.splice(idx, 1);
+                renderImgPreview();
+                if (!images.length) photoStatus.style.display = 'none';
+            };
+
+            const widget = cloudinary.createUploadWidget({ // [EN] Cloudinary upload widget / [PL] Widget uploadu Cloudinary
                 cloudName: 'dggnjcnhd',
                 uploadPreset: 'strona_8_ml_default',
                 maxFiles: MAX_IMAGES,
@@ -394,7 +296,7 @@
                 clientAllowedFormats: ["jpg", "png", "jpeg", "webp"],
                 folder: "portal_mateusza_ads"
             }, (error, result) => {
-                if (!error && result.event === "success" && result.info && result.info.secure_url) {
+                if (!error && result.event === "success" && result.info?.secure_url) {
                     if (images.length >= MAX_IMAGES) {
                         showPopupToast(`Możesz dodać maksymalnie ${MAX_IMAGES} zdjęcia!`, "error");
                         return;
@@ -406,7 +308,7 @@
                 }
             });
 
-            document.getElementById('upload_widget').onclick = () => { // [EN] Upload button click handler / [PL] Obsługa kliknięcia przycisku uploadu
+            document.getElementById('upload_widget').onclick = () => { // [EN] Open upload dialog / [PL] Otwórz dialog uploadu
                 if (images.length >= MAX_IMAGES) {
                     showPopupToast(`Możesz dodać maksymalnie ${MAX_IMAGES} zdjęć!`, "error");
                     return;
@@ -414,32 +316,24 @@
                 widget.open();
             };
 
-            document.getElementById('btnPublish').onclick = async () => { // [EN] Publish advertisement button handler / [PL] Obsługa przycisku publikacji ogłoszenia
+            document.getElementById('btnPublish').onclick = async () => { // [EN] Publish ad handler / [PL] Obsługa publikacji ogłoszenia
                 const title = document.getElementById('title').value.trim();
                 const content = document.getElementById('content').value.trim();
                 const category = document.getElementById('adCategory')?.value || "Inne";
 
-                // Validation / Walidacja
-                if (!title || !content) {
-                    return showPopupToast("Wypełnij tytuł i opis!", "error");
-                }
-                if (images.length === 0) {
-                    return showPopupToast("Dodaj chociaż jedno zdjęcie!", "error");
-                }
+                if (!title || !content) return showPopupToast("Wypełnij tytuł i opis!", "error");
+                if (!images.length) return showPopupToast("Dodaj chociaż jedno zdjęcie!", "error");
 
                 try {
                     await db.collection("ogloszenia").add({
-                        title: title,
-                        content: content,
-                        category: category,
-                        images: images,
+                        title,
+                        content,
+                        category,
+                        images,
                         date: new Date().toLocaleString('pl-PL'),
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    
                     showPopupToast("Ogłoszenie opublikowane!", "success");
-                    
-                    // Clear form and reload
                     setTimeout(() => location.reload(), 900);
                 } catch (e) {
                     console.error("[EN] Publish error:", e);
@@ -449,18 +343,14 @@
             };
         }
 
-        // ============================================
-        // CAROUSEL FUNCTIONALITY
-        // ============================================
-
-        function setupAllCarousels() { // [EN] Setup carousel navigation for all advertisements / [PL] Konfiguracja nawigacji karuzeli dla wszystkich ogłoszeń
+        // CAROUSEL
+        function setupAllCarousels() { // [EN] Setup carousel for each ad / [PL] Ustaw karuzelę dla każdego ogłoszenia
             document.querySelectorAll('.ad-carousel').forEach(carousel => {
-                const imgCount = parseInt(carousel.getAttribute('data-imgcount'), 10) || 1;
+                const imgCount = parseInt(carousel.dataset.imgcount, 10) || 1;
                 if (imgCount < 2) return;
                 
-                const adId = carousel.getAttribute('data-adid');
-                const allImages = window._AD_IMAGES && window._AD_IMAGES[adId];
-                
+                const adId = carousel.dataset.adid;
+                const allImages = window._AD_IMAGES?.[adId];
                 if (!allImages) return;
 
                 const imgEl = carousel.querySelector('img');
@@ -469,39 +359,23 @@
                 const dots = carousel.querySelectorAll('.carousel-dot');
                 let currentIndex = 0;
 
-                function showImage(index) { // [EN] Show specific image index / [PL] Wyświetlanie konkretnego indeksu obrazu
-                    currentIndex = index;
-                    if (currentIndex < 0) currentIndex = allImages.length - 1;
-                    if (currentIndex >= allImages.length) currentIndex = 0;
-                    
+                const showImage = index => { // [EN] Display image by index / [PL] Wyświetl obrazek o indeksie
+                    currentIndex = (index + allImages.length) % allImages.length;
                     imgEl.src = allImages[currentIndex];
                     leftBtn.style.display = currentIndex === 0 ? 'none' : '';
                     rightBtn.style.display = currentIndex === allImages.length - 1 ? 'none' : '';
-                    
-                    dots.forEach((dot, j) => {
-                        dot.classList.toggle('active', j === currentIndex);
-                    });
-                }
+                    dots.forEach((dot, j) => dot.classList.toggle('active', j === currentIndex));
+                };
 
-                // Event listeners for arrows / Nasłuchiwacze dla strzałek
-                if (leftBtn) leftBtn.addEventListener('click', () => showImage(currentIndex - 1));
-                if (rightBtn) rightBtn.addEventListener('click', () => showImage(currentIndex + 1));
-
-                // Event listeners for dots / Nasłuchiwacze kropek
-                dots.forEach(dot => {
-                    dot.onclick = () => showImage(parseInt(dot.getAttribute('data-idx'), 10));
-                });
-
-                // Initialize with first image / Inicjalizacja pierwszym obrazem
-                showImage(0);
+                leftBtn?.addEventListener('click', () => showImage(currentIndex - 1)); // [EN] Previous image / [PL] Poprzedni obraz
+                rightBtn?.addEventListener('click', () => showImage(currentIndex + 1)); // [EN] Next image / [PL] Następny obraz
+                dots.forEach(dot => dot.onclick = () => showImage(parseInt(dot.dataset.idx, 10))); // [EN] Dot click / [PL] Kliknięcie kropki
+                showImage(0); // [EN] Init first image / [PL] Inicjalizuj pierwszy obraz
             });
         }
 
-        // ============================================
-        // IMAGE MODAL (ZOOM)
-        // ============================================
-
-        function setupImgClickListeners() { // [EN] Setup modal for enlarged image view / [PL] Konfiguracja modalu do powiększonego widoku zdjęć
+        // IMAGE MODAL
+        function setupImgClickListeners() { // [EN] Attach click to enlarge images / [PL] Dołącz kliknięcie do powiększania obrazów
             document.querySelectorAll('.ad-carousel img.img-pop-big').forEach(img => {
                 img.onclick = function(e) {
                     const modal = document.getElementById('imgModal');
@@ -513,27 +387,14 @@
             });
         }
 
-        function setupImgModal() {
+        function setupImgModal() { // [EN] Setup modal close handlers / [PL] Ustaw obsługę zamykania modala
             const modal = document.getElementById('imgModal');
             const closeBtn = document.getElementById('imgModalClose');
             const img = document.getElementById('imgModalImg');
 
-            // Close button / Przycisk zamknięcia
-            closeBtn.onclick = () => {
-                modal.classList.remove('active');
-                img.src = '';
-            };
-
-            // Close on clicking outside / Zamknięcie po kliknięciu na tło
-            modal.onclick = function(e) {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
-                    img.src = '';
-                }
-            };
-
-            // Close on Escape key / Zamknięcie klawiszem Escape
-            document.addEventListener('keydown', function(e) {
+            closeBtn.onclick = () => { modal.classList.remove('active'); img.src = ''; }; // [EN] Close via button / [PL] Zamknij przez przycisk
+            modal.onclick = e => { if (e.target === modal) { modal.classList.remove('active'); img.src = ''; } }; // [EN] Close via backdrop / [PL] Zamknij przez tło
+            document.addEventListener('keydown', e => { // [EN] Close via Escape / [PL] Zamknij przez Escape
                 if (e.key === 'Escape' && modal.classList.contains('active')) {
                     modal.classList.remove('active');
                     img.src = '';
@@ -541,11 +402,8 @@
             });
         }
 
-        // ============================================
-        // DELETE FUNCTIONALITY
-        // ============================================
-
-        window.deleteAd = async (id) => showDeleteModal(async (confirmed) => { // [EN] Delete advertisement (admin only) / [PL] Usuwanie ogłoszenia (tylko admin)
+        // DELETE
+        window.deleteAd = id => showDeleteModal(async confirmed => { // [EN] Delete ad by ID / [PL] Usuń ogłoszenie po ID
             if (confirmed) {
                 try {
                     await db.collection("ogloszenia").doc(id).delete();
@@ -557,62 +415,38 @@
             }
         });
 
-        function showDeleteModal(callback) { // [EN] Show confirmation modal before deletion / [PL] Wyświetlanie modala potwierdzenia przed usunięciem
+        function showDeleteModal(callback) { // [EN] Show confirmation dialog / [PL] Pokaż dialog potwierdzenia
             const modal = document.getElementById('customConfirm');
             modal.style.display = 'flex';
-            
             const yesBtn = document.getElementById('confirmYes');
             const noBtn = document.getElementById('confirmNo');
-            
-            // Clean up previous listeners / Oczyszczenie poprzednich listenerów
-            const newYes = yesBtn.cloneNode(true);
+            const newYes = yesBtn.cloneNode(true); // [EN] Clone to avoid duplicate listeners / [PL] Klonuj by uniknąć duplikatów listenerów
             const newNo = noBtn.cloneNode(true);
             yesBtn.parentNode.replaceChild(newYes, yesBtn);
             noBtn.parentNode.replaceChild(newNo, noBtn);
-            
-            newYes.onclick = () => {
-                modal.style.display = 'none';
-                callback(true);
-            };
-            
-            newNo.onclick = () => {
-                modal.style.display = 'none';
-                callback(false);
-            };
+            newYes.onclick = () => { modal.style.display = 'none'; callback(true); }; // [EN] Confirm / [PL] Potwierdź
+            newNo.onclick = () => { modal.style.display = 'none'; callback(false); }; // [EN] Cancel / [PL] Anuluj
         }
 
-        // ============================================
-        // TOAST NOTIFICATIONS
-        // ============================================
-
-        function showPopupToast(message, type = "") { // [EN] Show temporary notification message / [PL] Wyświetlanie czasowej wiadomości powiadomienia
+        // TOAST
+        function showPopupToast(message, type = "") { // [EN] Show temporary notification / [PL] Pokaż czasowe powiadomienie
             const toast = document.getElementById('popupToast');
-            toast.innerText = message;
+            toast.textContent = message;
             toast.className = 'popup-toast' + (type ? ' ' + type : '');
             toast.classList.add('show');
-            
             clearTimeout(toast._timeout);
-            toast._timeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+            toast._timeout = setTimeout(() => toast.classList.remove('show'), 2000); // [EN] Auto-hide after 2s / [PL] Auto-ukryj po 2s
         }
 
-        // ============================================
         // LOGO INTERACTION
-        // ============================================
-
-        const logoContainer = document.getElementById('logoContainer'); // [EN] Add "nail hit" animation to logo on click / [PL] Dodanie animacji "wbicia gwoździa" do logo po kliknięciu
-        if (logoContainer) {
-            logoContainer.addEventListener('click', function(e) {
-                // Don't navigate if clicking on the link itself / Nie nawiguj jeśli kliknięto w link
-                if (e.target.closest('a')) return;
-                
+        document.getElementById('logoContainer')?.addEventListener('click', function(e) { // [EN] Add click animation to logo / [PL] Dodaj animację kliknięcia do logo
+            if (!e.target.closest('a')) {
                 this.classList.add('clicked');
                 setTimeout(() => this.classList.remove('clicked'), 400);
-            });
-        }
+            }
+        });
 
-        document.addEventListener('DOMContentLoaded', startProject); // [EN] Start application when DOM is ready / [PL] Uruchomienie aplikacji po załadowaniu DOM
+        document.addEventListener('DOMContentLoaded', startProject); // [EN] Boot when DOM ready / [PL] Uruchom gdy DOM gotowy
     </script>
 </body>
 </html>

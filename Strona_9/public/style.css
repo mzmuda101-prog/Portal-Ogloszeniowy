@@ -1,329 +1,293 @@
+/* [EN] Portal-Ogłoszeniowy - Mateusz User 2026 / [PL] Portal-Ogłoszeniowy - Mateusz User 2026 */
+
 :root {
+  /* Kolory podstawowe */
   --primary-color: #e67e22;
   --bg-overlay: rgba(18,18,18,0.65);
-  --card-bg: rgba(30,30,30,0.92); /* Lepsza wydajność - mniej przezroczystości */
+  --card-bg: rgba(30,30,30,0.92);
   --text-main: #f5f5f5;
+  --footer-text: #aaa;
   --accent: #f1c40f;
   --delete-red: #e74c3c;
+  
+  /* Czcionki */
   --font-header: 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-  --screw-color: #555;
-  /* Optymalizacja GPU */
+  
+  /* Szarości (przydatne do border, '
+  --gray-dark: #444;
+  --gray-darker: #222;
+  --gray-border: #242424;
+  --gray-btn: #555;
+  
+  /* Cienie */
   --shadow-light: 0 4px 12px rgba(0,0,0,0.4);
   --shadow-medium: 0 8px 24px rgba(0,0,0,0.5);
+  
+  /* Promienie */
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-full: 50%;
+  
+  /* Odstępy */
+  --spacing-xs: 6px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 15px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 30px;
 }
 
-/* --- Selektory elementów (bez kropki ani #) --- */
-body {
-  /* Usuwamy 'fixed' i ustawiamy tło tak, by mogło się przesuwać */
-  background-image: linear-gradient(var(--bg-overlay),var(--bg-overlay)),url('tlo.jpg'); /* Tło: gradient + obrazek drewna */
-  background-attachment: scroll; /* Tło przewija się razem z treścią (realistycznie) */
-  background-repeat: repeat-y; /* Deski będą się powtarzać w dół, jeśli strona będzie długa */
-  background-position: center top; /* Startujemy od samej góry zdjęcia */
-  background-size: 100% auto; /* Szerokość na 100%, wysokość dopasuje się sama */
-  color: var(--text-main); /* Główny kolor tekstu */
-  font-family: var(--font-header); /* Czcionka nagłówkowa */
-  max-width: 800px; /* Maksymalna szerokość kontenera */
-  margin: 0 auto; /* Wyśrodkowanie */
-  padding: 40px 20px; /* Odstępy wewnętrzne */
-  padding-top: 140px;
-  line-height: 1.6; /* Wysokość linii tekstu */
-}
-h1, h2 {
-  color: var(--primary-color); /* Kolor nagłówków */
-  text-align: center; /* Wyśrodkowanie napisów */
-  text-transform: uppercase; /* Wielkie litery */
-  letter-spacing: 2px; /* Rozstrzelenie liter (efekt premium) */
-  text-shadow: 2px 2px 4px black; /* Cień pod tekstem dla lepszej czytelności */
-  animation: fadeInDown 0.8s; /* Start animacji wjazdu z góry */
-}
-input, textarea, select {
-  width: 100%; /* Szerokość na 100% kontenera */
-  background: rgba(0,0,0,0.3); /* Bardzo ciemne, przezroczyste pole */
-  color: white; /* Biały tekst wpisywany przez użytkownika */
-  border: 1px solid #555; /* Obramowanie pola wpisywania */
-  padding: 12px; /* Miejsce na tekst wewnątrz pola */
-  margin: 10px 0; /* Odstęp między polami */
-  border-radius: 5px; /* Lekkie zaokrąglenie pól */
+/* --- RESET I BASELINE --- */
+* {
   box-sizing: border-box; /* Zapobiega "wychodzeniu" pól poza ramkę */
-  transition: 0.3s; /* Płynne przejście przy kliknięciu */
 }
+
+body {
+  background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('tlo.jpg');
+  background-attachment: scroll;
+  background-repeat: repeat-y;
+  background-position: center top;
+  background-size: 100% auto;
+  color: var(--text-main);
+  font-family: var(--font-header);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  padding-top: 140px;
+  line-height: 1.6;
+}
+
+/* --- TYPOGRAPHY --- */
+h1, h2 {
+  color: var(--primary-color);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px black;
+  animation: fadeInDown 0.8s;
+}
+
+/* --- FORM ELEMENTS --- */
+input, textarea, select {
+  width: 100%;
+  background: rgba(0,0,0,0.3);
+  color: white;
+  border: 1px solid var(--gray-dark);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  border-radius: var(--radius-sm);
+  transition: 0.3s;
+}
+
 input:focus, textarea:focus {
-  outline: none; /* Usunięcie domyślnej obwódki przeglądarki */
-  border-color: var(--primary-color); /* Zmiana koloru ramki na miedziany */
+  outline: none;
+  border-color: var(--primary-color);
 }
+
+/* --- BUTTONS --- */
 button {
-  /* PRZYCISKI Z EFEKTEM 3D I KLIKNIĘCIEM */
-  background: linear-gradient(135deg,var(--primary-color),#d35400); /* Gradient */
-  color: white; /* Biały kolor tekstu na przycisku */
-  font-weight: bold; /* Pogrubienie napisu */
-  cursor: pointer; /* Zmiana kursora na "łapkę" */
-  border: none; /* Brak bocznego obramowania */
-  padding: 15px; /* Wysokość przycisku */
-  width: 100%; /* Szerokość na całą dostępną przestrzeń */
-  border-radius: 8px; /* Zaokrąglenie rogów przycisku */
-  text-transform: uppercase; /* Wielkie litery na przycisku */
-  position: relative; /* Do poprawnego działania efektu wciśnięcia */
-  border-bottom: 4px solid #8e2700; /* Ciemniejszy spód (efekt grubości przycisku) */
-  transition: 0.1s; /* Bardzo szybka reakcja na kliknięcie */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Cień pod przyciskiem */
+  /* Przyciski z efektem 3D */
+  background: linear-gradient(135deg, var(--primary-color), #d35400);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  padding: var(--spacing-md);
+  width: 100%;
+  border-radius: var(--radius-md);
+  text-transform: uppercase;
+  position: relative;
+  border-bottom: 4px solid #8e2700;
+  transition: 0.1s;
+  box-shadow: var(--shadow-light);
 }
+
 button:hover {
-  filter: brightness(1.1); /* Rozjaśnienie przy najechaniu */
-  transform: translateY(-1px); /* Lekkie uniesienie przy najechaniu */
-  border-bottom-width: 5px; /* Pogrubienie spodu (przycisk "wstaje") */
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  border-bottom-width: 5px;
 }
+
 button:active {
-  transform: translateY(4px); /* Przycisk opada o wysokość spodu */
-  border-bottom-width: 0px; /* Spód "znika" w blaszanej karcie */
-  box-shadow: none; /* Cień znika, bo przycisk dotyka powierzchni */
+  transform: translateY(4px);
+  border-bottom-width: 0px;
+  box-shadow: none;
 }
 
-/* --- Selektory klasowe (.klasa) --- */
-
-/* Prosty popup/toast */
-.popup-toast {
-  position: fixed; left: 50%; bottom: 50px; min-width: 180px; max-width: 85vw;
-  transform: translateX(-50%);
-  background: var(--card-bg,#222); color: var(--text-main,#fff);
-  padding: 16px 28px; border-radius: 10px;
-  box-shadow: 0 6px 32px rgba(0,0,0,0.32); /* Głęboki cień */
-  font-size: 1em; font-family: var(--font-header,inherit);
-  z-index: 9999; opacity: 0; pointer-events: none;
-  transition: opacity 0.3s;
-}
-.popup-toast.show { opacity: 1; pointer-events: auto; } /* Pokaż popup */
-.popup-toast.error { background: var(--delete-red,#c0392b); color: #fff; }
-.popup-toast.success { background: var(--primary-color,#27ae60); color: #fff; }
-.popup-toast.info { background: var(--accent,#f1c40f); color: #181818; }
-
+/* --- COMPONENTS: FORMS & CARDS --- */
 .form-section, .ad-card {
   background: var(--card-bg);
-  padding: 30px;
-  border-radius: 10px;
-  border: 1px solid #444;
+  padding: var(--spacing-xxl);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-dark);
   box-shadow: var(--shadow-medium);
-  /* Usunięto backdrop-filter dla wydajności */
   position: relative;
-  margin-bottom: 30px;
-  /* Akceleracja GPU */
+  margin-bottom: var(--spacing-xxl);
   will-change: transform;
   transform: translateZ(0);
 }
-/* EFEKT ŚRUB W ROGACH (Lewa i Prawa góra) */
-.form-section::before, .ad-card::before, .form-section::after, .ad-card::after {
-  content: ''; /* Tworzy puste elementy dekoracyjne */
-  position: absolute; /* Ustawienie precyzyjne w rogach */
-  width: 10px; height: 10px; /* Szerokość/Wysokość łebka śruby */
-  background: radial-gradient(circle,#888,#222); /* Gradient metalicznego nitu */
-  border-radius: 50%; /* Okrągły kształt śruby */
-  box-shadow: 1px 1px 2px black; /* Cień pod śrubą dla efektu 3D */
-  top: 10px; /* 10px od górnej krawędzi */
-}
-.form-section::before, .ad-card::before {
-  left: 10px; /* Śruba w lewym rogu */
-}
+
+/* Śruby dekoracyjne w rogach kart i formularzy */
+.form-section::before, .ad-card::before,
 .form-section::after, .ad-card::after {
-  right: 10px; /* Śruba w prawym rogu */
-}
-.ad-card {
-  border-left: 5px solid var(--primary-color); /* Miedziany pasek z lewej strony */
-  animation: zoomIn 0.5s both; /* Efekt płynnego pojawiania się */
-  transition: transform 0.3s; /* Płynność ruchu przy najechaniu */
-}
-.ad-card:hover {
-  transform: translateY(-3px); /* Karta lekko się unosi po najechaniu */
-}
-.ad-card h3 {
-  margin-top: 0; /* Usunięcie marginesu nad tytułem */
-  color: var(--accent); /* Złoty kolor tytułu ogłoszenia */
-}
-.ad-card img {
-  max-width: 100%; /* Obrazek nie może być szerszy niż karta */
-  border-radius: 5px; /* Zaokrąglenie rogów zdjęcia */
-  margin-top: 15px; /* Odstęp zdjęcia od tekstu powyżej */
-  border: 1px solid rgba(255,255,255,0.1); /* Bardzo cienka ramka zdjęcia */
-}
-
-/* PRZYCISK USUWANIA */
-.delete-btn {
-  background: transparent; /* Brak tła przycisku usuwania */
-  color: var(--delete-red); /* Czerwony kolor napisu Usuń */
-  border: 1px solid var(--delete-red); /* Czerwona ramka przycisku */
-  border-bottom: 2px solid #a93226; /* Efekt 3D dla przycisku Usuń */
-  padding: 6px 12px; /* Rozmiar przycisku */
-  font-size: 0.85em; /* Nieco mniejszy tekst */
-  border-radius: 6px; /* Zaokrąglenie przycisku */
-  float: right; /* Przesunięcie przycisku do prawej */
-  transition: 0.1s; /* Szybka reakcja */
-  display: none; /* Domyślnie ukryte dla wszystkich */
-}
-.delete-btn:active {
-  transform: translateY(2px); /* Wciśnięcie przycisku Usuń */
-  border-bottom-width: 0px; /* Likwidacja spodu przy kliku */
-}
-.is-admin .delete-btn {
-  display: block; /* Pokazane tylko, gdy body ma klasę is-admin */
-}
-
-/* Klasa, którą dodamy przez JavaScript tuż przed usunięciem karty */
-.fade-out {
-  opacity: 0; /* Karta staje się przezroczysta */
-  transform: scale(0.9) translateY(20px); /* Karta maleje i opada */
-  transition: 0.5s; /* Całość trwa pół sekundy */
-  pointer-events: none; /* Blokuje klikanie w kartę podczas znikania */
-}
-
-/* CZARNA MASKA NA CAŁY EKRAN */
-.modal-overlay {
-  position: fixed; /* Okienko "pływa" nad stroną */
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.85); /* Mocne przyciemnienie tła */
-  display: flex; /* Wyśrodkowanie okienka */
-  justify-content: center; align-items: center;
-  z-index: 1000; /* Żeby zawsze było na samym wierzchu */
-}
-/* Szybki styl dla powiększonego obrazka (modal) */
-.img-modal-overlay {
-    display:none; position:fixed; z-index:10001; left:0; top:0; width:100vw; height:100vh;
-    background:rgba(0,0,0,0.85); align-items:center; justify-content:center;
-}
-.img-modal-overlay.active { display:flex; }
-.img-modal-content {
-    position:relative; max-width:90vw; max-height:90vh; width:auto; height:auto; 
-    box-shadow:0 0 40px #000; border-radius:8px;
-}
-.img-modal-content img{
-    max-width:90vw; max-height:80vh; border-radius:8px;
-    background:#fff;
-}
-.img-modal-close {
-    position:absolute; top:12px; right:14px; color:#fff; background:rgba(0,0,0,0.6); border:none;
-    font-size:2em; border-radius:50%; width:42px; height:42px; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    padding:0;
-}
-.img-modal-close span {
-    display:block; width:100%; text-align:center; line-height:1;
-    font-size:1.4em; /* zmniejsza X żeby nie był za duży względem kółka */
-    transform:translateY(-2px);
-}
-.img-modal-close:active { background:rgba(0,0,0,0.85); }
-/* TABLICZKA MODALA */
-.modal-content {
-  background: var(--card-bg); /* Nasze ciemne tło */
-  padding: 30px; border-radius: 10px;
-  border: 2px solid var(--primary-color); /* Miedziana ramka */
-  text-align: center; /* Środek tekstu */
-  box-shadow: 0 0 30px rgba(0,0,0,1);
-  max-width: 350px; /* Okienko nie będzie za szerokie */
-  position: relative; /* Pozycjonowanie */
-}
-
-/* Karuzela i galeria zdjęć ogłoszenia - poprawione rozmiary dla dużych ekranów */
-.ad-carousel {
-  position: relative; /* Pozycja względem karuzeli */
-  width: 100%; /* Szerokość karuzeli */
-  margin: 8px 0 15px 0; /* Marginesy */
-  text-align: center; /* Wyśrodkowanie */
-  min-height: 0; /* Minimalna wysokość */
-}
-.ad-carousel img {
-  display: block; /* Blokowy obrazek */
-  margin: 0 auto; /* Wyśrodkowanie */
-  max-width: 95vw; /* Maksymalna szerokość na małych ekranach */
-  width: 100%; /* Zawsze 100% szerokości rodzica */
-  height: auto; /* Proporcjonalna wysokość */
-  max-height: 240px; /* Maksymalna wysokość */
-  box-shadow: 0 3px 14px rgba(0,0,0,0.30); /* Cień */
-  border-radius: 8px; /* Zaokrąglenie */
-  background: #222; /* Ciemne tło okolice zdjęcia */
-  border: 1.5px solid #242424; /* Lekka ramka */
-  transition: max-width 0.2s, max-height 0.2s; /* Płynne efekty */
-}
-/* Strzałki do karuzeli zdjęć */
-.carousel-arrow {
+  content: '';
   position: absolute;
-  top: 50%;
-  width: 28px; height: 28px;
-  border-radius: 30px; /* Okrągła strzałka */
-  background: rgba(34,34,34,0.35); /* Półprzezroczysta */
-  color: #fff; /* Biała */
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  z-index: 1;
-  display: flex; /* Wyśrodkowanie znaku w strzałce */
-  align-items: center; justify-content: center;
-  transition: background 0.2s;
-  transform: translateY(-50%) scale(1);
+  width: 10px; height: 10px;
+  background: radial-gradient(circle, #888, #222);
+  border-radius: var(--radius-full);
+  box-shadow: 1px 1px 2px black;
+  top: 10px;
 }
-.carousel-arrow.left { left: 6px; } /* Strzałka lewa */
-.carousel-arrow.right { right: 6px; } /* Strzałka prawa */
-.carousel-arrow:hover { background: rgba(34,34,34,0.90); transform: translateY(-50%) scale(1); }
-.carousel-arrow:active { transform: translateY(-50%) scale(1); }
+.form-section::before, .ad-card::before { left: 10px; }
+.form-section::after, .ad-card::after { right: 10px; }
 
-/* Kropki do karuzeli zdjęć */
-.carousel-dots {
-  text-align: center;
-  margin-top: 5.5px;
-  user-select: none; /* Uniemożliwia zaznaczanie kropek */
-}
-.carousel-dot {
-  display: inline-block;
-  width: 8px; height: 8px;
-  margin: 0 3.5px;
-  background: #aaa; border-radius: 50%;
-  cursor: pointer;
-  opacity: 0.6;
-}
-.carousel-dot.active { background: var(--primary-color, #e67e22); opacity: 1; } /* Pokazuje wybraną kropkę */
-
-/* Miniaturki zdjęć przesłanych w formularzu */
-.ad-img-preview-list {
-  display: flex; flex-wrap: wrap;
-  margin-bottom: 6px;
-  gap: 6px; /* Odstęp między miniaturkami */
-}
-.ad-img-preview-list img {
-  width: 55px; height: 55px; object-fit: cover; /* Kadrowanie obrazka */
-  border-radius: 7px; /* Zaokrąglenia */
-  border: 2px solid #888; /* Szara ramka */
-  background: #151515; /* Ciemne tło miniatury */
+/* Karty ogłoszeń */
+.ad-card {
+  border-left: 5px solid var(--primary-color);
+  animation: zoomIn 0.5s both;
+  transition: transform 0.3s;
 }
 
-/* Przycisk usuwania miniatury */
-.remove-image-btn {
-  background: transparent;
-  color: #e74c3c; /* Czerwony krzyżyk */
-  border: none;
-  cursor: pointer;
-  font-size: 17px;
-  margin-left: -19px; /* Przyklejenie do zdjęcia */
-  margin-top: -6px;
-  padding: 0;
-  position: relative; z-index: 10;
+.ad-card:hover {
+  transform: translateY(-3px);
 }
-.remove-image-btn:hover { color: #c0392b; }
 
-.modal-buttons { /* Przycisk obok przycisku w modalu */
+.ad-card h3 {
+  margin-top: 0;
+  color: var(--accent);
+}
+
+.ad-card img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  margin-top: var(--spacing-lg);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* --- TOAST NOTIFICATIONS --- */
+.popup-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 50px;
+  min-width: 180px;
+  max-width: 85vw;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  color: var(--text-main);
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 32px rgba(0,0,0,0.32);
+  font-size: 1em;
+  font-family: var(--font-header);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.popup-toast.show { opacity: 1; pointer-events: auto; }
+.popup-toast.error { background: var(--delete-red); color: #fff; }
+.popup-toast.success { background: var(--primary-color); color: #fff; }
+.popup-toast.info { background: var(--accent); color: #181818; }
+
+/* --- MODALS --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
   display: flex;
-  gap: 15px; /* Odstęp między przyciskami */
-  margin-top: 20px;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
-.btn-confirm { background: var(--delete-red)!important; } /* Czerwony na TAK */
-.btn-cancel { background: #555!important; } /* Szary na NIE */
 
+.img-modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 10001;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  align-items: center;
+  justify-content: center;
+}
 
-/* --Logo Bar - Styl "Przybitej Tabliczki" -- */
+.img-modal-overlay.active { display: flex; }
+
+.img-modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  box-shadow: 0 0 40px #000;
+  border-radius: var(--radius-md);
+}
+
+.img-modal-content img {
+  max-width: 90vw;
+  max-height: 80vh;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.img-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  color: #fff;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  font-size: 2em;
+  border-radius: var(--radius-full);
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.img-modal-close span {
+  display: block;
+  width: 100%;
+  text-align: center;
+  line-height: 1;
+  font-size: 1.4em;
+  transform: translateY(-2px);
+}
+
+.img-modal-close:active { background: rgba(0,0,0,0.85); }
+
+.modal-content {
+  background: var(--card-bg);
+  padding: var(--spacing-xxl);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--primary-color);
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,0,0,1);
+  max-width: 350px;
+  position: relative;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+}
+
+.btn-confirm { background: var(--delete-red) !important; }
+.btn-cancel { background: var(--gray-btn) !important; }
+
+/* --- LOGO BAR --- */
 .logo-title {
   font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
   font-weight: 700;
   font-size: 1.4rem;
   letter-spacing: 2px;
-  color: var(--accent); /* Złoty kolor */
-  text-shadow: 
-    2px 2px 4px rgba(0,0,0,0.8),
-    0 0 20px rgba(241, 196, 15, 0.3); /* Złota poświata */
+  color: var(--accent);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(241, 196, 15, 0.3);
   line-height: 1.2;
   margin-left: 12px;
   transition: all 0.3s ease;
@@ -338,17 +302,14 @@ button:active {
   z-index: 100;
   display: flex;
   align-items: center;
-  /* Uproszczony styl dla wydajności */
   background: rgba(40, 40, 40, 0.96);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 12px 16px;
   box-shadow: var(--shadow-medium);
-  border: 1px solid #333;
+  border: 1px solid var(--gray-dark);
   border-left: 5px solid var(--primary-color);
-  /* Usunięto backdrop-filter dla wydajności */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-  /* Akceleracja GPU */
   will-change: transform;
   transform: translateZ(0);
 }
@@ -361,34 +322,23 @@ button:active {
   width: 12px;
   height: 12px;
   background: radial-gradient(circle at 30% 30%, #888, #444, #222);
-  border-radius: 50%;
-  box-shadow: 
-    inset -1px -1px 2px rgba(0,0,0,0.5),
-    1px 1px 3px rgba(0,0,0,0.4);
+  border-radius: var(--radius-full);
+  box-shadow: inset -1px -1px 2px rgba(0,0,0,0.5), 1px 1px 3px rgba(0,0,0,0.4);
   z-index: 101;
-}
-
-.site-logo-container::before {
   top: 8px;
-  left: 8px;
 }
 
-.site-logo-container::after {
-  top: 8px;
-  right: 8px;
-}
+.site-logo-container::before { left: 8px; }
+.site-logo-container::after { right: 8px; }
 
-/* Dodatkowe śruby na dole */
 .site-logo-container .screw-bottom-left,
 .site-logo-container .screw-bottom-right {
   position: absolute;
   width: 12px;
   height: 12px;
   background: radial-gradient(circle at 30% 30%, #888, #444, #222);
-  border-radius: 50%;
-  box-shadow: 
-    inset -1px -1px 2px rgba(0,0,0,0.5),
-    1px 1px 3px rgba(0,0,0,0.4);
+  border-radius: var(--radius-full);
+  box-shadow: inset -1px -1px 2px rgba(0,0,0,0.5), 1px 1px 3px rgba(0,0,0,0.4);
   bottom: 8px;
   z-index: 101;
 }
@@ -396,34 +346,24 @@ button:active {
 .site-logo-container .screw-bottom-left { left: 8px; }
 .site-logo-container .screw-bottom-right { right: 8px; }
 
-/* Hover - tabliczka "odkleja się" od desek */
 .site-logo-container:hover {
   transform: translateY(-4px) rotateX(2deg);
-  box-shadow: 
-    0 12px 35px rgba(0,0,0,0.7),
-    0 6px 20px rgba(0,0,0,0.5),
-    inset 0 1px 0 rgba(255,255,255,0.08);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.7), 0 6px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
   border-color: var(--primary-color);
   background: linear-gradient(145deg, rgba(50, 50, 50, 0.98), rgba(35, 35, 35, 0.99));
 }
 
 .site-logo-container:hover .logo-title {
-  text-shadow: 
-    2px 2px 4px rgba(0,0,0,0.8),
-    0 0 30px rgba(241, 196, 15, 0.5);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 30px rgba(241, 196, 15, 0.5);
   letter-spacing: 3px;
 }
 
-/* Active - efekt "wbicia" gwoździem */
 .site-logo-container:active {
   transform: translateY(2px) rotateX(0deg);
-  box-shadow: 
-    0 2px 8px rgba(0,0,0,0.5),
-    inset 0 2px 4px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.3);
   transition: all 0.08s ease;
 }
 
-/* Animacja "drżenia" przy kliknięciu */
 .site-logo-container.clicked {
   animation: nailHit 0.4s ease;
 }
@@ -438,13 +378,12 @@ button:active {
   100% { transform: translateY(0); }
 }
 
-/* Logo image - styl "przypiętego zdjęcia" */
 .site-logo-img {
   display: block;
   width: 70px;
   height: 70px;
   object-fit: cover;
-  border-radius: 5px; /* Kwadrat z lekkim zaokrągleniem */
+  border-radius: var(--radius-sm);
   filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
   user-select: none;
   cursor: pointer;
@@ -452,9 +391,7 @@ button:active {
   background: #1a1a1a;
   box-sizing: border-box;
   transition: all 0.25s ease;
-  box-shadow: 
-    inset 0 0 0 1px rgba(255,255,255,0.1),
-    0 3px 10px rgba(0,0,0,0.4);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1), 0 3px 10px rgba(0,0,0,0.4);
 }
 
 .site-logo-container:hover .site-logo-img {
@@ -467,51 +404,190 @@ button:active {
   transform: scale(0.98);
   filter: drop-shadow(0 1px 4px rgba(0,0,0,0.5));
 }
-/* --- Selektory ID (#) --- */
-#adFormSection { display: none; } /* Sekcja formularza ukryta domyślnie */
-#photo-status { display: none; } /* Domyślnie ukryty, pokazywany przez JS po załadowaniu zdjęć */
-#customConfirm { display: none; } /* Modal potwierdzenia domyślnie schowany */
-#adFilterSection { margin-bottom: 15px; } /* Odstęp filtra */
-#adFilterSection label { font-weight: bold; } /* Pogrubienie napisów filtrowania */
 
-/* --- MEDIA QUERIES --- */
-/* Większe zdjęcia na szerszych ekranach */
+/* --- DELETE BUTTON --- */
+.delete-btn {
+  background: transparent;
+  color: var(--delete-red);
+  border: 1px solid var(--delete-red);
+  border-bottom: 2px solid #a93226;
+  padding: 6px 12px;
+  font-size: 0.85em;
+  border-radius: var(--radius-sm);
+  float: right;
+  transition: 0.1s;
+  display: none;
+}
+
+.delete-btn:active {
+  transform: translateY(2px);
+  border-bottom-width: 0px;
+}
+
+.is-admin .delete-btn { display: block; }
+
+.fade-out {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+  transition: 0.5s;
+  pointer-events: none;
+}
+
+/* --- CAROUSEL --- */
+.ad-carousel {
+  position: relative;
+  width: 100%;
+  margin: var(--spacing-sm) 0 var(--spacing-lg);
+  text-align: center;
+  min-height: 0;
+}
+
+.ad-carousel img {
+  display: block;
+  margin: 0 auto;
+  max-width: 95vw;
+  width: 100%;
+  height: auto;
+  max-height: 240px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.30);
+  border-radius: var(--radius-md);
+  background: var(--gray-darker);
+  border: 1.5px solid var(--gray-border);
+  transition: max-width 0.2s, max-height 0.2s;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  border-radius: 30px;
+  background: rgba(34,34,34,0.35);
+  color: #fff;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  transform: translateY(-50%) scale(1);
+}
+
+.carousel-arrow.left { left: 6px; }
+.carousel-arrow.right { right: 6px; }
+
+.carousel-arrow:hover { background: rgba(34,34,34,0.90); transform: translateY(-50%) scale(1); }
+.carousel-arrow:active { transform: translateY(-50%) scale(1); }
+
+.carousel-dots {
+  text-align: center;
+  margin-top: var(--spacing-xs);
+  user-select: none;
+}
+
+.carousel-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 3.5px;
+  background: #aaa;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.carousel-dot.active { background: var(--primary-color); opacity: 1; }
+
+/* --- IMAGE PREVIEW (UPLOAD) --- */
+.ad-img-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-xs);
+  gap: var(--spacing-xs);
+}
+
+.ad-img-preview-list img {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--gray-dark);
+  background: #151515;
+}
+
+.remove-image-btn {
+  background: transparent;
+  color: var(--delete-red);
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+  margin-left: -19px;
+  margin-top: -6px;
+  padding: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.remove-image-btn:hover { color: #c0392b; }
+
+/* --- ID-SELECTORS (layout) --- */
+#adFormSection { display: none; }
+#photo-status { display: none; }
+#customConfirm { display: none; }
+#adFilterSection { margin-bottom: var(--spacing-md); }
+#adFilterSection label { font-weight: bold; }
+
+/* --- FOOTER --- */
+.footer-copyright {
+  text-align: center;
+  color: var(--footer-text);
+  font-size: 0.9em;
+  margin-top: 40px;
+}
+
+/* --- RESPONSIVE --- */
 @media (max-width: 600px) {
   .site-logo-container {
-      top: 10px;
-      right: 30px;
-      left: 30px;
-      padding: 3px 7px;
+    top: 10px;
+    right: 30px;
+    left: 30px;
+    padding: 3px 7px;
   }
   .site-logo-img {
-      width: 56px;
-      height: 56px;
+    width: 56px;
+    height: 56px;
+  }
+  body {
+    background-size: 250% auto;
+    background-position: 40% top;
+    padding: 20px 10px;
+    padding-top: 80px;
   }
 }
+
 @media (min-width: 600px) {
   .ad-carousel img {
     max-width: 450px;
     max-height: 340px;
   }
 }
+
 @media (min-width: 1000px) {
   .ad-carousel img {
     max-width: 600px;
     max-height: 440px;
   }
 }
-/* POPRAWKA DLA TELEFONÓW (Ekran mniejszy niż 600px szerokości) */
-@media (max-width:600px) {
-  body {
-    background-size: 250% auto; /* Powiększamy zdjęcie (deski będą szersze i wyraźniejsze) */
-    background-position: 40% top; /* Przesuwamy lekko w bok, żeby wybrać ładniejszy fragment drewna */
-    padding: 20px 10px; /* Mniejsze marginesy boczne, żeby było więcej miejsca na tekst */
-    padding-top: 80px;
-  }
-}
 
 /* --- ANIMACJE --- */
-@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } } /* Wjazd z góry */
-@keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } } /* Powiększenie przy wejściu */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+}
 
-/* Funkcja cursor:pointer w CSS jest darmowa, nie ma limitu użytkowania i nie generuje żadnych kosztów – możesz jej używać dowolnie na stronie. */
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.95); }
+}
+
+/* [EN] Function cursor:pointer in CSS is free, no usage limits – safe to use anywhere. / [PL] Funkcja cursor:pointer w CSS jest darmowa, nie ma limitu użytkowania – bezpieczna do użycia. */

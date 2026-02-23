@@ -26,4 +26,13 @@ Projekt znajduje się w folderze `Strona_9/public`.
 - `klucze.env` - Konfiguracja środowiskowa (lokalnie).
 
 ---
+
+## 📝 Author
+**Mateusz User**  
+© 2026  
+
+## 📄 License
+MIT License - see LICENSE file for details.
+
+---
 *Projekt stworzony jako element profesjonalnego portfolio programistycznego.*
