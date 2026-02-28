@@ -186,10 +186,13 @@
                 const snapshot = await baseQuery.get();
                 docs = snapshot.docs;
             } else if (currentCategoryFilter === "Inne") {
-                const allDocs = await baseQuery.get();
-                docs = allDocs.filter(doc => {
-                    const ad = doc.data();
-                    return !ad.category || ad.category === "" || ad.category === "Inne";
+                const snapshot = await baseQuery.get();
+                docs = snapshot.docs.filter(doc => {
+                    const ad = doc.data() || {};
+                    const normalizedCategory = typeof ad.category === "string"
+                        ? ad.category.trim().toLowerCase()
+                        : "";
+                    return !normalizedCategory || normalizedCategory === "inne";
                 });
             } else {
                 const snapshot = await baseQuery.where("category", "==", currentCategoryFilter).get();
