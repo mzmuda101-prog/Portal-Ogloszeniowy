@@ -1,5 +1,7 @@
 # 🛒 Portal Ogłoszeniowy CloudStack
 
+To jeden z moich pierwszych projektów, w którym rozwijam dobre praktyki i optymalizację kodu.
+
 Aplikacja marketplace z panelem administratora, publikacją ogłoszeń i integracją usług chmurowych (`Firebase + Cloudinary`).
 
 ## 🌍 Live Demo
