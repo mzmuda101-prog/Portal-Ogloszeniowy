@@ -49,7 +49,7 @@ Aplikacja marketplace z panelem administratora, publikacją ogłoszeń i integra
 - [ ] Rozszerzenie panelu admina o edycję istniejących ogłoszeń.
 
 ## 👤 Autor
-Mateusz User
+Mateusz Zmuda
 
 ## 📄 Licencja
 MIT
