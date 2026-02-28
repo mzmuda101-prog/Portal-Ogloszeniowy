@@ -1,6 +1,4 @@
-console.log("Szukam pliku .env w:", process.cwd()); // Wyświetli w terminalu folder, w którym jesteś
-console.log("TEST KLUCZA:", process.env.FIREBASE_PROJECT_ID); // Wyświetli klucz (jeśli go widzi)
-require('dotenv').config({path: './klucze.env'});                         // Ładuje klucze z pliku .env do pamięci serwera
+require('dotenv').config({ path: './klucze.env' });                       // Ładuje klucze z pliku .env do pamięci serwera
 const express = require('express');                 // Importuje framework do budowy serwera
 const cors = require('cors');                       // Pozwala Twojej stronie (Frontend) gadać z serwerem (Backend)
 const path = require('path');                       // Narzędzie do zarządzania ścieżkami plików
@@ -29,5 +27,6 @@ app.get('/config', (req, res) => {
 app.listen(PORT, () => {
     console.log(`--- SERWER DZIAŁA! ---`);
     console.log(`Link: http://localhost:${PORT}`);
-    console.log(`Wciśnij CTRL+C w terminalu, żeby wyłączyć.`);
+    console.log(`Środowisko: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Firebase projectId: ${process.env.FIREBASE_PROJECT_ID ? 'OK' : 'BRAK (sprawdź klucze.env)'}`);
 });

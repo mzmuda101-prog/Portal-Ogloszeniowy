@@ -13,7 +13,7 @@
   /* Czcionki */
   --font-header: 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
   
-  /* Szarości (przydatne do border, '
+  /* Szarości (przydatne do border i kontrastu) */
   --gray-dark: #444;
   --gray-darker: #222;
   --gray-border: #242424;

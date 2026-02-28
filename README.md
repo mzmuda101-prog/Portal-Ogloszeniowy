@@ -1,38 +1,40 @@
-1.1 - Live Demo https://portal-ogloszeniowy.vercel.app
-# 🚀 Portal Ogłoszeniowy CloudStack
-Zaawansowana aplikacja webowa typu marketplace z pełną integracją chmurową.
+# Portal Ogłoszeniowy CloudStack
 
-## 🌟 Główne Funkcje
-- **Dynamiczne Ogłoszenia:** Wyświetlanie treści w czasie rzeczywistym z bazy NoSQL.
-- **Multi-Cloud Storage:** Separacja danych tekstowych (Firebase) od multimediów (Cloudinary).
-- **Admin Panel:** Zabezpieczony system logowania dla administratora (Firebase Auth).
-- **Cloudinary Integration:** Automatyczny upload i optymalizacja zdjęć bezpośrednio do chmury.
+Live demo: https://portal-ogloszeniowy.vercel.app
 
-## 🛠️ Stack Technologiczny
-- **Frontend:** HTML5, CSS3 (Custom Styling), JavaScript (ES6+)
-- **Backend-as-a-Service:** Firebase (Firestore, Auth)
-- **Media Cloud:** Cloudinary API
-- **Deployment:** Vercel (CI/CD)
+Aplikacja marketplace z panelem admina, publikacją ogłoszeń oraz integracją Firebase + Cloudinary.
 
-## 🔒 Bezpieczeństwo i Dobre Praktyki
-- **Environment Variables:** Wrażliwe dane (API Keys) są w pełni odizolowane w pliku `.env` i nie są publikowane w repozytorium.
-- **Security Rules:** Zastosowano reguły dostępu Firebase ograniczające uprawnienia do bazy.
-- **Secure Delivery:** Wszystkie media serwowane są przez protokół HTTPS.
+## Funkcje
+- Logowanie administratora (Firebase Auth).
+- Dodawanie/wyświetlanie/usuwanie ogłoszeń (Firestore).
+- Upload zdjęć przez Cloudinary (do 4 zdjęć na ogłoszenie).
+- Filtrowanie ogłoszeń po kategorii.
+- Podgląd zdjęć (modal + prosta karuzela).
 
-## 📁 Struktura Projektu
-Projekt znajduje się w folderze `Strona_9/public`. 
-- `index.html` - Główna struktura i logika aplikacji.
-- `style.css` - Warstwa wizualna.
-- `klucze.env` - Konfiguracja środowiskowa (lokalnie).
+## Stack
+- Frontend: HTML, CSS, JavaScript
+- Backend: Node.js + Express
+- Baza i auth: Firebase (Firestore, Auth)
+- Media: Cloudinary
 
----
+## Struktura projektu
+- `Strona_9/public/index.html` - UI i logika frontendu.
+- `Strona_9/public/style.css` - stylowanie interfejsu.
+- `Strona_9/server.js` - serwer Express i endpoint `/config`.
+- `Strona_9/package.json` - zależności backendu.
 
-## 📝 Author
-**Mateusz User**  
-© 2026  
+## Konfiguracja lokalna
+1. Przejdź do `Strona_9`.
+2. Utwórz plik `klucze.env` z kluczami Firebase:
+   - `FIREBASE_API_KEY`
+   - `FIREBASE_AUTH_DOMAIN`
+   - `FIREBASE_PROJECT_ID`
+   - `FIREBASE_STORAGE_BUCKET`
+   - `FIREBASE_MESSAGING_SENDER_ID`
+   - `FIREBASE_APP_ID`
+3. Zainstaluj zależności: `npm install`.
+4. Uruchom serwer: `node server.js`.
 
-## 📄 License
-MIT License - see LICENSE file for details.
-
----
-*Projekt stworzony jako element profesjonalnego portfolio programistycznego.*
+## Bezpieczeństwo
+- Nie commituj `klucze.env`.
+- Ustaw reguły Firestore i Firebase Auth zgodnie z rolami dostępu.
