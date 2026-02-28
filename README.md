@@ -1,31 +1,33 @@
-# Portal Ogłoszeniowy CloudStack
+# 🛒 Portal Ogłoszeniowy CloudStack
 
-Live demo: https://portal-ogloszeniowy.vercel.app
+Aplikacja marketplace z panelem administratora, publikacją ogłoszeń i integracją usług chmurowych (`Firebase + Cloudinary`).
 
-Aplikacja marketplace z panelem admina, publikacją ogłoszeń oraz integracją Firebase + Cloudinary.
+## 🌍 Live Demo
+🔗 https://portal-ogloszeniowy.vercel.app
 
-## Funkcje
-- Logowanie administratora (Firebase Auth).
-- Dodawanie/wyświetlanie/usuwanie ogłoszeń (Firestore).
-- Upload zdjęć przez Cloudinary (do 4 zdjęć na ogłoszenie).
-- Filtrowanie ogłoszeń po kategorii.
-- Podgląd zdjęć (modal + prosta karuzela).
+## ✨ Funkcje
+- ✅ Logowanie administratora (Firebase Auth).
+- ✅ Dodawanie, wyświetlanie i usuwanie ogłoszeń (Firestore).
+- ✅ Upload zdjęć przez Cloudinary (max 4 zdjęcia).
+- ✅ Filtrowanie ogłoszeń po kategorii.
+- ✅ Modal podglądu zdjęć + prosta karuzela.
 
-## Stack
+## 🧰 Stack
 - Frontend: HTML, CSS, JavaScript
 - Backend: Node.js + Express
-- Baza i auth: Firebase (Firestore, Auth)
+- Baza danych i auth: Firebase (Firestore, Auth)
 - Media: Cloudinary
+- Hosting/Deploy: Vercel
 
-## Struktura projektu
-- `Strona_9/public/index.html` - UI i logika frontendu.
-- `Strona_9/public/style.css` - stylowanie interfejsu.
-- `Strona_9/server.js` - serwer Express i endpoint `/config`.
+## 📁 Struktura projektu
+- `Strona_9/public/index.html` - interfejs i logika frontendu.
+- `Strona_9/public/style.css` - stylowanie aplikacji.
+- `Strona_9/server.js` - serwer Express + endpoint `/config`.
 - `Strona_9/package.json` - zależności backendu.
 
-## Konfiguracja lokalna
-1. Przejdź do `Strona_9`.
-2. Utwórz plik `klucze.env` z kluczami Firebase:
+## ⚙️ Konfiguracja lokalna
+1. Przejdź do katalogu `Strona_9`.
+2. Utwórz plik `klucze.env` i dodaj:
    - `FIREBASE_API_KEY`
    - `FIREBASE_AUTH_DOMAIN`
    - `FIREBASE_PROJECT_ID`
@@ -35,6 +37,17 @@ Aplikacja marketplace z panelem admina, publikacją ogłoszeń oraz integracją 
 3. Zainstaluj zależności: `npm install`.
 4. Uruchom serwer: `node server.js`.
 
-## Bezpieczeństwo
-- Nie commituj `klucze.env`.
-- Ustaw reguły Firestore i Firebase Auth zgodnie z rolami dostępu.
+## 🔐 Bezpieczeństwo
+- Nie commituj pliku `klucze.env`.
+- Ustaw reguły Firebase Auth i Firestore zgodnie z wymaganymi rolami.
+
+## 🗺️ Roadmap
+- [ ] Podział kodu JS na mniejsze moduły.
+- [ ] Lepsze logowanie błędów w backendzie.
+- [ ] Rozszerzenie panelu admina o edycję istniejących ogłoszeń.
+
+## 👤 Autor
+Mateusz User
+
+## 📄 Licencja
+MIT
