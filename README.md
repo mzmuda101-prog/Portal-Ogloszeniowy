@@ -1,5 +1,5 @@
 # Portal Ogłoszeniowy CloudStack
-
+To jeden z moich pierwszych projektów, w którym rozwijam dobre praktyki i optymalizację kodu :)
 Live demo: https://portal-ogloszeniowy.vercel.app
 
 Aplikacja marketplace z panelem admina, publikacją ogłoszeń oraz integracją Firebase + Cloudinary.
