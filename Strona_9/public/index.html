@@ -15,6 +15,10 @@
     <script type="importmap">{"imports":{"firebase/app":"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js","firebase/firestore":"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"}}</script>
 </head>
 <body>
+    <div class="hero-overlay" id="heroSplash">
+        <video src="MateuszIntro.mp4" autoplay muted playsinline tabindex="-1" preload="auto" aria-label="Intro Mateusza" id="introVideo"></video>
+    </div>
+
     <header class="site-logo-container" id="logoContainer" role="banner">
         <span class="screw-bottom-left"></span>
         <span class="screw-bottom-right"></span>
@@ -139,6 +143,41 @@
 
         function updateCurrentYear() { // [EN] Set current year in footer / [PL] Ustaw bieżący rok w stopce
             document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+
+        function initIntroSplash() { // [EN] Initialize intro splash video / [PL] Inicjalizacja intro wideo
+            const splash = document.getElementById("heroSplash");
+            const vid = document.getElementById("introVideo");
+            if (sessionStorage.getItem("introPlayed")) {
+                if (splash) splash.style.display = "none";
+                document.body.classList.remove("splashing");
+                return;
+            }
+
+            document.body.classList.add("splashing");
+            if (vid) {
+                vid.currentTime = 0;
+                vid.muted = true;
+                vid.play().catch(() => { hideSplash(); });
+                const fallback = setTimeout(hideSplash, 15000);
+                vid.addEventListener("ended", () => {
+                    clearTimeout(fallback);
+                    hideSplash();
+                });
+            } else {
+                setTimeout(hideSplash, 8000);
+            }
+
+            function hideSplash() { // [EN] Hide intro with fade-out / [PL] Ukryj intro z fade-out
+                if (splash && !splash.classList.contains("hide")) {
+                    splash.classList.add("hide");
+                    sessionStorage.setItem("introPlayed", "true");
+                    setTimeout(() => {
+                        splash.style.display = "none";
+                        document.body.classList.remove("splashing");
+                    }, 700);
+                }
+            }
         }
 
         // AUTH
@@ -449,7 +488,10 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', startProject); // [EN] Boot when DOM ready / [PL] Uruchom gdy DOM gotowy
+        document.addEventListener('DOMContentLoaded', () => { // [EN] Boot app + intro / [PL] Uruchom aplikację + intro
+            initIntroSplash();
+            startProject();
+        });
     </script>
 </body>
 </html>

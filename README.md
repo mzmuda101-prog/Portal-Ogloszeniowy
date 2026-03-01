@@ -13,6 +13,7 @@ Aplikacja marketplace z panelem administratora, publikacją ogłoszeń i integra
 - ✅ Upload zdjęć przez Cloudinary (max 4 zdjęcia).
 - ✅ Filtrowanie ogłoszeń po kategorii.
 - ✅ Modal podglądu zdjęć + prosta karuzela.
+- ✅ Intro wideo przy wejściu na stronę (odtwarzane raz na sesję).
 
 ## 🧰 Stack
 - Frontend: HTML, CSS, JavaScript
@@ -24,6 +25,7 @@ Aplikacja marketplace z panelem administratora, publikacją ogłoszeń i integra
 ## 📁 Struktura projektu
 - `Strona_9/public/index.html` - interfejs i logika frontendu.
 - `Strona_9/public/style.css` - stylowanie aplikacji.
+- `Strona_9/public/MateuszIntro.mp4` - plik intro wideo.
 - `Strona_9/server.js` - serwer Express + endpoint `/config`.
 - `Strona_9/package.json` - zależności backendu.
 
