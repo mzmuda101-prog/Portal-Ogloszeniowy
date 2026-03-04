@@ -2,3 +2,5 @@ klucze.env
 node_modules
 build
 dist
+# macOS
+.DS_Store
