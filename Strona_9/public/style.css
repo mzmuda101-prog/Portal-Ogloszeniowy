@@ -137,15 +137,15 @@ button {
   border-radius: var(--radius-md);
   text-transform: uppercase;
   position: relative;
-  border-bottom: 4px solid #8e2700;
+  border-bottom: 5px solid #8e2700;
   transition: 0.1s;
   box-shadow: var(--shadow-light);
 }
 
 button:hover {
   filter: brightness(1.1);
-  transform: translateY(-1px);
-  border-bottom-width: 5px;
+  transform: translateY(+1px);
+  border-bottom-width: 4px;
 }
 
 button:active {
@@ -170,7 +170,7 @@ button:active {
   font-weight: bold;
   text-decoration: none;
   border: none;
-  border-bottom: 4px solid #06263b;
+  border-bottom: 5px solid #06263b;
   border-radius: var(--radius-md);
   padding: 10px 16px;
   text-transform: uppercase;
@@ -188,7 +188,7 @@ button:active {
   font-weight: bold;
   text-decoration: none;
   border: none;
-  border-bottom: 4px solid #06263b;
+  border-bottom: 5px solid #06263b;
   border-radius: var(--radius-md);
   padding: 10px 16px;
   text-transform: uppercase;
@@ -199,16 +199,16 @@ button:active {
 
 .project-switch-link-1:hover {
   color: #fff;
-  transform: translateY(-1px);
+  transform: translateY(+1px);
   filter: brightness(1.08);
-  border-bottom-width: 5px;
+  border-bottom-width: 4px;
 }
 
 .project-switch-link-2:hover {
   color: #fff;
-  transform: translateY(-1px);
+  transform: translateY(+1px);
   filter: brightness(1.08);
-  border-bottom-width: 5px;
+  border-bottom-width: 4px;
 }
 
 .project-switch-link-1:active {
@@ -518,7 +518,7 @@ button:active {
   background: transparent;
   color: var(--delete-red);
   border: 1px solid var(--delete-red);
-  border-bottom: 2px solid #a93226;
+  border-bottom: 5px solid #a93226;
   padding: 6px 12px;
   font-size: 0.85em;
   border-radius: var(--radius-sm);

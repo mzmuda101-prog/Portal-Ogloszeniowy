@@ -35,7 +35,7 @@
                 <input type="email" id="loginEmail" placeholder="Email admina" required>
                 <label for="loginPass" class="visually-hidden">Hasło administratora</label>
                 <input type="password" id="loginPass" placeholder="Hasło" required>
-                <button id="btnLogin" type="button">Zaloguj jako Admin</button>
+                <button id="Login-btn" type="button">Zaloguj jako Admin</button>
             </div>
             <div id="adminPanel" class="admin-panel" hidden>
                 <p>Witaj Adminie! Możesz teraz zarządzać ogłoszeniami.</p>
@@ -200,7 +200,7 @@
                 if (isAdmin) showPopupToast("Jesteś zalogowany jako admin.", "success");
             });
 
-            document.getElementById('btnLogin').onclick = async () => { // [EN] Admin login / [PL] Logowanie admina
+            document.getElementById('Login-btn').onclick = async () => { // [EN] Admin login / [PL] Logowanie admina
                 try {
                     await auth.signInWithEmailAndPassword(
                         document.getElementById('loginEmail').value,
