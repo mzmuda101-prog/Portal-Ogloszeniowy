@@ -54,4 +54,7 @@ Aplikacja marketplace z panelem administratora, publikacją ogłoszeń i integra
 Mateusz Zmuda
 
 ## 📄 Licencja
-MIT
+Kod źródłowy projektu jest udostępniony na licencji `MIT`.
+
+Wyjątek:
+logo, grafiki, branding, identyfikacja wizualna, intro video oraz inne materiały prezentacyjne pozostają własnością Mateusza Zmudy i nie są przeznaczone do ponownego użycia jako gotowy branding lub portfolio 1:1 bez wyraźnej zgody autora.
