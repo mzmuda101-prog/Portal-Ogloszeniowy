@@ -1,4 +1,5 @@
 klucze.env
+.env
 node_modules
 build
 dist
